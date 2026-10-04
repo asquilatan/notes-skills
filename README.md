@@ -45,14 +45,22 @@ It will ask whether you want to install the skills in your current repo (`.agent
 
 ### Usage
 
-Once installed, ask your agent:
+Start a topic by running:
+
+```text
+/notes-start [topic]
+```
+
+or simply:
 
 ```text
 Teach me [topic]
 ```
 
-or:
+### Flow
 
-```text
-/learn [topic]
-```
+1. **Initial Grill**: The agent asks a few questions one at a time to pin down your background, goals, and preferred depth.
+2. **Diagnostic Quiz**: It runs a quick diagnostic to check your baseline knowledge so you skip what you already know.
+3. **Curriculum Outline**: It generates `overview.md` with a visual dependency graph and `notes.md` for reference summaries.
+4. **Lesson Generation & Validation**: It writes lessons with runnable examples, audits them for accuracy, and presents them for reading.
+5. **Check-ins & Progression**: You read the lesson, take a quick check-in quiz, and advance through the roadmap.

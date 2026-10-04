@@ -251,12 +251,11 @@ async function main() {
     }
 
     console.log(`\n${c.green(c.bold('✨ Successfully installed ' + selectedSkills.length + ' skills!'))}\n`);
-    console.log(`${c.bold('🚀 How to start learning:')}`);
-    console.log(`  1. In your agent chat or terminal session, type:`);
-    console.log(`     ${c.cyan('Teach me [Topic]')}`);
-    console.log(`     ${c.dim('or')}`);
-    console.log(`     ${c.cyan('/learn [Topic]')}`);
-    console.log(`  2. The master orchestrator (${c.bold('notes-start')}) will guide your customized curriculum!`);
+    console.log(`${c.bold('🚀 How to start:')}`);
+    console.log(`  In your agent chat or terminal session, run:`);
+    console.log(`    ${c.cyan('/notes-start [topic]')}`);
+    console.log(`    ${c.dim('or')}`);
+    console.log(`    ${c.cyan('Teach me [topic]')}`);
     console.log('');
   } catch (err) {
     if (rl) rl.close();
