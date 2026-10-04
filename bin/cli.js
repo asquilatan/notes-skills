@@ -47,9 +47,8 @@ function printUsage() {
   npx github:asquilatan/notes-skills [options]
 
 ${c.bold('Options:')}
-  ${c.green('--repo, --local')}         Install into current project repository (.agent/skills)
-  ${c.green('--global, -g')}            Install into global Gemini config (~/.gemini/config/skills)
-  ${c.green('--agents-global')}         Install into global Agents config (~/.agents/skills)
+  ${c.green('--repo, --local')}         Install into current project repository (.agents/skills)
+  ${c.green('--global, -g')}            Install globally (~/.agents/skills)
   ${c.green('--dest <path>')}           Install into a custom target directory
   ${c.green('--all, -y, --yes')}        Install all skills without confirmation
   ${c.green('--force')}                 Overwrite existing skill directories without asking
@@ -113,7 +112,6 @@ async function main() {
   const isAutoYes = args.includes('--all') || args.includes('-y') || args.includes('--yes');
   const isRepoFlag = args.includes('--repo') || args.includes('--local');
   const isGlobalFlag = args.includes('--global') || args.includes('-g');
-  const isAgentsGlobalFlag = args.includes('--agents-global');
 
   let destArg = null;
   const destIndex = args.indexOf('--dest');
@@ -123,20 +121,17 @@ async function main() {
 
   const gitRoot = findGitRoot();
   const repoDefaultPath = gitRoot
-    ? path.join(gitRoot, '.agent', 'skills')
-    : path.join(process.cwd(), '.agent', 'skills');
+    ? path.join(gitRoot, '.agents', 'skills')
+    : path.join(process.cwd(), '.agents', 'skills');
 
-  const geminiGlobalPath = path.join(os.homedir(), '.gemini', 'config', 'skills');
-  const agentsGlobalPath = path.join(os.homedir(), '.agents', 'skills');
+  const globalPath = path.join(os.homedir(), '.agents', 'skills');
 
   let targetDir = destArg;
   if (!targetDir) {
     if (isRepoFlag) {
       targetDir = repoDefaultPath;
     } else if (isGlobalFlag) {
-      targetDir = geminiGlobalPath;
-    } else if (isAgentsGlobalFlag) {
-      targetDir = agentsGlobalPath;
+      targetDir = globalPath;
     }
   }
 
@@ -157,23 +152,19 @@ async function main() {
   try {
     if (!targetDir) {
       console.log(`${c.bold('Where would you like to install the notes-* skills?')}`);
-      console.log(`  ${c.cyan('[1]')} Current repository ${c.dim('(.agent/skills)')}`);
+      console.log(`  ${c.cyan('[1]')} Current repository ${c.dim('(.agents/skills)')}`);
       console.log(`      ${c.dim('Target:')} ${c.yellow(repoDefaultPath)}`);
-      console.log(`  ${c.cyan('[2]')} Global Gemini / Antigravity config ${c.dim('(~/.gemini/config/skills)')}`);
-      console.log(`      ${c.dim('Target:')} ${c.yellow(geminiGlobalPath)}`);
-      console.log(`  ${c.cyan('[3]')} Global Agent skills ${c.dim('(~/.agents/skills)')}`);
-      console.log(`      ${c.dim('Target:')} ${c.yellow(agentsGlobalPath)}`);
-      console.log(`  ${c.cyan('[4]')} Custom path`);
+      console.log(`  ${c.cyan('[2]')} Globally ${c.dim('(~/.agents/skills)')}`);
+      console.log(`      ${c.dim('Target:')} ${c.yellow(globalPath)}`);
+      console.log(`  ${c.cyan('[3]')} Custom path`);
 
-      const choice = (await getRl().question(`\n${c.bold('Enter choice [1-4]')} ${c.dim('(default: 1)')}: `)).trim() || '1';
+      const choice = (await getRl().question(`\n${c.bold('Enter choice [1-3]')} ${c.dim('(default: 1)')}: `)).trim() || '1';
 
       if (choice === '1') {
         targetDir = repoDefaultPath;
       } else if (choice === '2') {
-        targetDir = geminiGlobalPath;
+        targetDir = globalPath;
       } else if (choice === '3') {
-        targetDir = agentsGlobalPath;
-      } else if (choice === '4') {
         const custom = (await getRl().question(`${c.bold('Enter destination directory:')} `)).trim();
         if (!custom) {
           console.log(c.yellow('Defaulting to repository path.'));

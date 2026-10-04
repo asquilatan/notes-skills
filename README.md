@@ -41,7 +41,7 @@ Run the interactive installer using `npx`:
 npx github:asquilatan/notes-skills
 ```
 
-It will ask whether you want to install the skills in your current repo (`.agent/skills`) or globally (`~/.gemini/config/skills`).
+It will ask whether you want to install the skills in your current repo (`.agents/skills`) or globally (`~/.agents/skills`).
 
 ### Usage
 
