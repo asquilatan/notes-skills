@@ -36,8 +36,8 @@ const SKILL_DESCRIPTIONS = {
 
 function printBanner() {
   console.log(`
-${c.bold('notes-skills installer')}
-${c.dim('Install notes & learning skills for your agent')}
+${c.bold('notes-skills CLI')}
+${c.dim('Install or remove notes & learning skills for your agent')}
 `);
 }
 
@@ -47,22 +47,29 @@ function printUsage() {
   npx github:asquilatan/notes-skills [options]
 
 ${c.bold('Options:')}
-  ${c.green('--repo, --local')}         Install into current project repository (.agents/skills)
-  ${c.green('--global, -g')}            Install globally (~/.agents/skills)
-  ${c.green('--dest <path>')}           Install into a custom target directory
-  ${c.green('--all, -y, --yes')}        Install all skills without confirmation
-  ${c.green('--force')}                 Overwrite existing skill directories without asking
+  ${c.green('--repo, --local')}         Target current project repository (.agents/skills)
+  ${c.green('--global, -g')}            Target globally (~/.agents/skills)
+  ${c.green('--dest <path>')}           Target a custom directory
+  ${c.green('--remove, -r')}            Remove installed notes-* skills
+  ${c.green('--all, -y, --yes')}        Apply to all skills without prompting
+  ${c.green('--force')}                 Force overwrite without asking
   ${c.green('--help, -h')}              Show this help message
 
 ${c.bold('Examples:')}
-  ${c.dim('# Interactive wizard (Recommended)')}
+  ${c.dim('# Interactive wizard (Install or Remove)')}
   npx github:asquilatan/notes-skills
 
-  ${c.dim('# Install locally in the current repo')}
+  ${c.dim('# Install to current repo')}
   npx github:asquilatan/notes-skills --repo
 
-  ${c.dim('# Install globally for all projects')}
+  ${c.dim('# Install globally')}
   npx github:asquilatan/notes-skills --global
+
+  ${c.dim('# Remove from current repo')}
+  npx github:asquilatan/notes-skills --remove --repo
+
+  ${c.dim('# Remove globally')}
+  npx github:asquilatan/notes-skills --remove --global
 `);
 }
 
@@ -98,6 +105,23 @@ async function discoverLocalSkills() {
   }
 }
 
+async function findInstalledSkills(targetDir) {
+  if (!existsSync(targetDir)) return [];
+  try {
+    const entries = await fs.readdir(targetDir, { withFileTypes: true });
+    return entries
+      .filter((e) => e.isDirectory() && e.name.startsWith('notes-'))
+      .map((e) => e.name)
+      .sort((a, b) => {
+        if (a === 'notes-start') return -1;
+        if (b === 'notes-start') return 1;
+        return a.localeCompare(b);
+      });
+  } catch {
+    return [];
+  }
+}
+
 async function main() {
   const args = process.argv.slice(2);
 
@@ -112,6 +136,7 @@ async function main() {
   const isAutoYes = args.includes('--all') || args.includes('-y') || args.includes('--yes');
   const isRepoFlag = args.includes('--repo') || args.includes('--local');
   const isGlobalFlag = args.includes('--global') || args.includes('-g');
+  let isRemove = args.includes('--remove') || args.includes('--uninstall') || args.includes('-r');
 
   let destArg = null;
   const destIndex = args.indexOf('--dest');
@@ -135,12 +160,6 @@ async function main() {
     }
   }
 
-  const availableSkills = await discoverLocalSkills();
-  if (availableSkills.length === 0) {
-    console.error(c.red('❌ Error: Could not locate notes-* skills in package.'));
-    process.exit(1);
-  }
-
   let rl;
   const getRl = () => {
     if (!rl) {
@@ -150,8 +169,24 @@ async function main() {
   };
 
   try {
+    // If action not specified by flag and no quick flags, ask what to do
+    const hasExplicitTargetFlag = isRepoFlag || isGlobalFlag || Boolean(destArg);
+    if (!isRemove && !hasExplicitTargetFlag) {
+      console.log(`${c.bold('What would you like to do?')}`);
+      console.log(`  ${c.cyan('[1]')} Install skills ${c.dim('(default)')}`);
+      console.log(`  ${c.cyan('[2]')} Remove skills`);
+
+      const actionChoice = (await getRl().question(`\n${c.bold('Enter choice [1-2]')} ${c.dim('(default: 1)')}: `)).trim() || '1';
+      if (actionChoice === '2') {
+        isRemove = true;
+      }
+      console.log('');
+    }
+
+    // Select target directory if not set
     if (!targetDir) {
-      console.log(`${c.bold('Where would you like to install the notes-* skills?')}`);
+      const verb = isRemove ? 'remove skills from' : 'install skills to';
+      console.log(`${c.bold(`Where would you like to ${verb}?`)}`);
       console.log(`  ${c.cyan('[1]')} Current repository ${c.dim('(.agents/skills)')}`);
       console.log(`      ${c.dim('Target:')} ${c.yellow(repoDefaultPath)}`);
       console.log(`  ${c.cyan('[2]')} Globally ${c.dim('(~/.agents/skills)')}`);
@@ -165,7 +200,7 @@ async function main() {
       } else if (choice === '2') {
         targetDir = globalPath;
       } else if (choice === '3') {
-        const custom = (await getRl().question(`${c.bold('Enter destination directory:')} `)).trim();
+        const custom = (await getRl().question(`${c.bold('Enter target directory:')} `)).trim();
         if (!custom) {
           console.log(c.yellow('Defaulting to repository path.'));
           targetDir = repoDefaultPath;
@@ -177,6 +212,86 @@ async function main() {
         targetDir = repoDefaultPath;
       }
       console.log('');
+    }
+
+    // ==========================================
+    // REMOVE FLOW
+    // ==========================================
+    if (isRemove) {
+      const installed = await findInstalledSkills(targetDir);
+
+      if (installed.length === 0) {
+        console.log(c.yellow(`ℹ️  No notes-* skills found in: ${targetDir}`));
+        if (rl) rl.close();
+        return;
+      }
+
+      console.log(`${c.bold('Found installed skills in')} ${c.yellow(targetDir)}:`);
+      installed.forEach((s) => console.log(`  - ${s}`));
+      console.log('');
+
+      let skillsToRemove = installed;
+      if (!isAutoYes) {
+        console.log(`${c.bold('Which skills would you like to remove?')}`);
+        console.log(`  ${c.cyan('[1]')} All ${installed.length} skills ${c.dim('(default)')}`);
+        console.log(`  ${c.cyan('[2]')} Choose individual skills`);
+
+        const removeChoice = (await getRl().question(`\n${c.bold('Enter choice [1-2]')} ${c.dim('(default: 1)')}: `)).trim() || '1';
+
+        if (removeChoice === '2') {
+          console.log(`\n${c.bold('Select skills to remove:')}`);
+          installed.forEach((name, idx) => {
+            console.log(`  ${c.cyan(`[${idx + 1}]`)} ${name}`);
+          });
+
+          const selectedInput = (await getRl().question(`\n${c.bold('Enter numbers to remove (comma-separated, e.g. 1,2):')} `)).trim();
+          if (selectedInput) {
+            const indices = selectedInput
+              .split(/[, ]+/)
+              .map((s) => Number.parseInt(s.trim(), 10) - 1)
+              .filter((i) => !Number.isNaN(i) && i >= 0 && i < installed.length);
+
+            if (indices.length > 0) {
+              skillsToRemove = [...new Set(indices)].map((i) => installed[i]);
+            }
+          }
+        }
+        console.log('');
+
+        if (!isForce) {
+          const confirm = (await getRl().question(`${c.bold(`Are you sure you want to remove ${skillsToRemove.length} skill(s)? [y/N]:`)} `)).trim().toLowerCase();
+          if (confirm !== 'y' && confirm !== 'yes') {
+            console.log(c.dim('Removal cancelled. No files were deleted.'));
+            if (rl) rl.close();
+            return;
+          }
+          console.log('');
+        }
+      }
+
+      if (rl) {
+        rl.close();
+        rl = null;
+      }
+
+      console.log(`${c.bold('🗑️  Removing skills from:')} ${c.yellow(targetDir)}\n`);
+      for (const skill of skillsToRemove) {
+        const skillDir = path.join(targetDir, skill);
+        await fs.rm(skillDir, { recursive: true, force: true });
+        console.log(`  ${c.green('✔')} Removed ${skill}`);
+      }
+
+      console.log(`\n${c.green(c.bold(`✨ Successfully removed ${skillsToRemove.length} skill(s)!`))}\n`);
+      return;
+    }
+
+    // ==========================================
+    // INSTALL FLOW
+    // ==========================================
+    const availableSkills = await discoverLocalSkills();
+    if (availableSkills.length === 0) {
+      console.error(c.red('❌ Error: Could not locate notes-* skills in package.'));
+      process.exit(1);
     }
 
     let selectedSkills = availableSkills;

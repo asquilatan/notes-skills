@@ -33,15 +33,27 @@ graph TD
 - **[`notes-validate-coding-lessons`](./notes-validate-coding-lessons/)**: This skill checks coding lessons for syntax errors and API accuracy.
 - **[`notes-validate-general-lessons`](./notes-validate-general-lessons/)**: This skill checks non-coding lessons for factual accuracy and realism.
 
-## Installation
+## Installation & Management
 
-Run the interactive installer using `npx`:
+Run the interactive CLI using `npx`:
 
 ```bash
 npx github:asquilatan/notes-skills
 ```
 
-It will ask whether you want to install the skills in your current repo (`.agents/skills`) or globally (`~/.agents/skills`).
+It will ask whether you want to **install** or **remove** skills, and whether to target your current repo (`.agents/skills`) or globally (`~/.agents/skills`).
+
+You can also use flags directly:
+
+```bash
+# Install
+npx github:asquilatan/notes-skills --repo      # Local repo
+npx github:asquilatan/notes-skills --global    # Global
+
+# Remove
+npx github:asquilatan/notes-skills --remove --repo
+npx github:asquilatan/notes-skills --remove --global
+```
 
 ### Usage
 
