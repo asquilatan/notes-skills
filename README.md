@@ -38,8 +38,10 @@ graph TD
 Run the interactive CLI using `npx`:
 
 ```bash
-npx github:asquilatan/notes-skills
+npx --allow-git=all github:asquilatan/notes-skills
 ```
+
+*(Note: npm 11+ disables git packages by default. Run `npm config set allow-git all` once to use plain `npx github:...` without the flag).*
 
 It will ask whether you want to **install** or **remove** skills, and whether to target your current repo (`.agents/skills`) or globally (`~/.agents/skills`).
 
