@@ -1,0 +1,31 @@
+{
+  "name": "notes-skills",
+  "version": "1.0.0",
+  "description": "Interactive CLI installer for the Notes Learning Orchestration skills suite",
+  "type": "module",
+  "bin": {
+    "notes-skills": "./bin/cli.js"
+  },
+  "files": [
+    "bin",
+    "notes-*"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asquilatan/notes-skills.git"
+  },
+  "keywords": [
+    "antigravity",
+    "gemini-cli",
+    "agent-skills",
+    "skills",
+    "pedagogy",
+    "learning",
+    "orchestrator"
+  ],
+  "author": "asquilatan <mak050605@gmail.com>",
+  "license": "MIT"
+}
