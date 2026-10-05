@@ -1,6 +1,6 @@
 ---
 name: notes-start
-description: "Master interactive learning orchestrator. Guides topic selection through grilling, records preferences and struggle points in root agent_notes.md for context-less agent handoffs, generates true DAG dependency graphs, administers quizzes via clickable modal or token-saving markdown checkboxes, delegates lesson creation using the 'one dev teaching another' house style, and audits content with dual subagents."
+description: "Master interactive learning orchestrator. Guides topic selection through grilling, records preferences and struggle points in root agent_notes.md for context-less agent handoffs, generates true DAG dependency graphs, administers quizzes via built-in question tool or token-saving markdown checkboxes, delegates lesson creation using the 'one dev teaching another' house style, and audits content with dual subagents."
 license: MIT
 metadata:
   author: user
@@ -23,7 +23,7 @@ This skill coordinates the full learning lifecycle for any technical topic. It o
 `notes-start` acts as the master orchestrator, delegating focused tasks across 7 specialized skills:
 
 1. **`notes-create-outline`**: Creates and maintains top-level `agent_notes.md` (preferences, settings, struggle tracker), course `overview.md`, and module `overview.md` with true DAG Mermaid graphs.
-2. **`notes-conduct-quiz`**: Administers quizzes (diagnostic, mid-lesson check-in, module requiz, course major quiz) via chosen delivery format (clickable UI modal or Markdown checkboxes `- [ ]`), updates `questions.md`, and logs learner struggles to `agent_notes.md`.
+2. **`notes-conduct-quiz`**: Administers quizzes (diagnostic, mid-lesson check-in, module requiz, course major quiz) via chosen delivery format (built-in question tool (`ask_question`) or Markdown checkboxes `- [ ]`), updates `questions.md`, and logs learner struggles to `agent_notes.md`.
 3. **`notes-create-coding-lessons`**: Generates sequenced lesson files (`01-...md` to `0n-...md`) for **code and software engineering topics** (runnable snippets, after-code translations, dev-to-dev voice).
 4. **`notes-create-general-lessons`**: Generates sequenced lesson files (`01-...md` to `0n-...md`) for **non-code and practical craft topics** (e.g. baking, concrete molding, perfumery, cooking, carpentry) using action protocols, sensory checks, and physical recoveries.
 5. **`notes-validate-coding-lessons`**: Audits **code and software engineering topics** (syntax, API versions, RFC specs, and runtime mechanics).
@@ -49,7 +49,7 @@ flowchart TD
     H2 --> V2["Validate: notes-validate-general-lessons"]
     V1 --> J["10. Student Reads Lesson -> Signals 'Ready'"]
     V2 --> J
-    J --> K["11. Lesson Quiz in questions.md -> Delivered via Modal or [ ] Checkboxes"]
+    J --> K["11. Lesson Quiz in questions.md -> Delivered via Built-in Tool or [ ] Checkboxes"]
     K --> L{"Passed Lesson Quiz (100%)?"}
     L -- No --> M["Hydra Drills in questions.md & Log Struggle in agent_notes.md"]
     M --> J
@@ -81,7 +81,7 @@ Do NOT generate course files until the user has been grilled. Ask **one question
 6. **Current Level**: Beginner / Intermediate / Advanced.
 7. **Output Workspace**: Confirm root directory in current workspace (default: `./notes/` or `./Learning/<topic>/`).
 8. **Question Delivery Mode**: "How would you like to take quizzes and check-ins?
-   - **(A) Interactive UI Modal (`ask_question`)**: The agent generates clickable buttons in the interface (smooth, zero typing).
+   - **(A) Built-in Question Tool (`ask_question`)**: The agent prompts questions directly using its native question tool (smooth, zero typing).
    - **(B) Markdown Checkboxes (`- [ ]` in `questions.md`)**: The agent writes questions directly to `questions.md` with `- [ ]` checkboxes; you mark `- [x]` in your editor and reply 'done'. (Saves tokens, keeps everything in markdown)."
 
 > [!IMPORTANT]
@@ -99,7 +99,7 @@ Once the grill finishes:
    - **Phase 1 (Q1 to Q4)**: Binary search jumps to locate the candidate frontier (Step up on correct; step down on incorrect or `"I'm not sure"`).
    - **Phase 2 (Q5 to Q8)**: Corroboration & boundary verification to eliminate lucky guesses and confirm stable baseline.
    - **Crucial Rule**: Every diagnostic question **MUST include Option 4 (Option D) as `"I'm not sure"`**, with Options A, B, and C strictly balanced in length and plausibility.
-   - Deliver into root `notes/questions.md` via the learner's chosen mode (Modal or `- [ ]` Checkboxes).
+   - Deliver into root `notes/questions.md` via the learner's chosen mode (Built-in Tool or `- [ ]` Checkboxes).
 4. Record all questions, user answers, and correct explanations directly in `notes/questions.md`.
 5. Record the verified frontier in `notes/agent_notes.md` and designate it as the starting module for the course.
 
@@ -139,7 +139,7 @@ When initiating a module:
 2. **Do NOT create `notes.md` in the module**: Module files are strictly `overview.md`, `questions.md`, and lesson files.
 3. Invoke `notes-conduct-quiz` to run the **Module Diagnostic Quiz** (adaptive binary search within module scope):
    - **Crucial Rule**: Every diagnostic question **MUST include Option 4 (Option D) as `"I'm not sure"`**.
-   - Written to `01-.../questions.md` and delivered via chosen mode (Modal or Checkbox).
+   - Written to `01-.../questions.md` and delivered via chosen mode (Built-in Tool or Checkbox).
 4. Evaluate user answers, log results in `questions.md`, and record baseline observations in root `agent_notes.md`.
 5. Invoke `notes-create-outline` to generate `01-.../overview.md` containing:
    - Module objective summary.
@@ -179,7 +179,7 @@ For each lesson in the module:
 4. **Trigger Check-in (Per User Preference)**:
    - Inspect `overview.md` to identify the active lesson.
    - Invoke `notes-conduct-quiz` to format a **6–10 question check-in quiz** into **`questions.md`**.
-   - If user prefers **Interactive UI Modal**: deliver via `ask_question` in chunks of 3–5.
+   - If user prefers **Built-in Question Tool**: deliver via `ask_question` in chunks of 3–5.
    - If user prefers **Markdown Checkboxes**: format with `- [ ]` checkboxes in `questions.md`, prompt student to mark `[x]` and reply 'done', then evaluate with `view_file`.
 5. **The Hydra 100% Mastery Loop**:
    - Grade answers and update `questions.md` with results and explanations.

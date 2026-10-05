@@ -98,7 +98,7 @@ notes/
 - **Topic Domain**: [Software/Code vs. Practical Craft / Non-Code]
 - **Learning Style**: [Project-based vs. Concept-only vs. Mixed]
 - **Source Authority**: [Provided Syllabus/PPT vs. Generated from Scratch]
-- **Question Delivery Mode**: [Interactive UI Modal (`ask_question`) / Markdown Checkbox (`- [ ]` in `questions.md`)]
+- **Question Delivery Mode**: [Built-in Question Tool (`ask_question`) / Markdown Checkbox (`- [ ]` in `questions.md`)]
 - **User Pacing / Notes**: [Any additional nuances or preferences captured during grilling]
 
 ## Baseline Knowledge Frontier

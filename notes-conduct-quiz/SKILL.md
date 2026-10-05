@@ -1,6 +1,6 @@
 ---
 name: notes-conduct-quiz
-description: "Conducts diagnostic, post-lesson, module re-quiz, and course major quizzes. Implements adaptive binary-search diagnostics, supports dual delivery modes (clickable UI modal vs token-saving Markdown checkboxes in questions.md), and logs learner struggle points to root agent_notes.md."
+description: "Conducts diagnostic, post-lesson, module re-quiz, and course major quizzes. Implements adaptive binary-search diagnostics, supports dual delivery modes (built-in question tool (`ask_question`) vs token-saving Markdown checkboxes in questions.md), and logs learner struggle points to root agent_notes.md."
 license: MIT
 metadata:
   author: user
@@ -8,7 +8,7 @@ metadata:
 
 # Notes Conduct Quiz
 
-Use this skill to conduct all learning assessments. All quizzes are written to the target `questions.md` file (root or module level), delivered either via interactive UI modal (`ask_question`) or token-saving Markdown checkboxes (`- [ ]`), and learner struggle areas are actively logged to root `agent_notes.md` for context-less agent handoffs.
+Use this skill to conduct all learning assessments. All quizzes are written to the target `questions.md` file (root or module level), delivered either via the built-in question tool (`ask_question`) or token-saving Markdown checkboxes (`- [ ]`), and learner struggle areas are actively logged to root `agent_notes.md` for context-less agent handoffs.
 
 > [!CAUTION]
 > **WORKSPACE PATH ENFORCEMENT (CRITICAL)**:
@@ -20,15 +20,15 @@ Use this skill to conduct all learning assessments. All quizzes are written to t
 
 ## 1. The 5 Quiz Types & Sizing
 
-Quizzes are delivered using the learner's preferred mode recorded in root `agent_notes.md` (**Interactive UI Modal** or **Markdown Checkbox Mode**).
+Quizzes are delivered using the learner's preferred mode recorded in root `agent_notes.md` (**Built-in Question Tool** or **Markdown Checkbox Mode**).
 
 | Quiz Type | Location | Purpose & Trigger | Sizing & Strategy | Delivery Format |
 | :--- | :--- | :--- | :--- | :--- |
-| **Course Diagnostic** | Root `notes/questions.md` | Calibrates starting point across the whole course roadmap before outlining. | **Adaptive Binary Search with Confirmation (6–8 Questions)**: Starts at moderate difficulty. If correct -> harder/later topic; if wrong / "not sure" -> earlier topic. Confirms frontier to eliminate lucky guesses. | Written to root `questions.md`. Delivered via chosen format (Modal or Checkbox). Frontier logged to `agent_notes.md`. |
+| **Course Diagnostic** | Root `notes/questions.md` | Calibrates starting point across the whole course roadmap before outlining. | **Adaptive Binary Search with Confirmation (6–8 Questions)**: Starts at moderate difficulty. If correct -> harder/later topic; if wrong / "not sure" -> earlier topic. Confirms frontier to eliminate lucky guesses. | Written to root `questions.md`. Delivered via chosen format (Built-in Tool or Checkbox). Frontier logged to `agent_notes.md`. |
 | **Module Diagnostic** | `NN-module/questions.md` | Calibrates baseline familiarity within the specific module before lesson authoring. | **Adaptive Binary Search with Confirmation (6–8 Questions)**: Probes prerequisites and core module concepts, confirming baseline with 6–8 total questions. | Written to module `questions.md`. Delivered via chosen format. Baseline logged to `agent_notes.md`. |
 | **Post-Lesson Check-in** | `NN-module/questions.md` | Validates understanding of a single lesson when the user signals "ready". | **6–10 Questions**: Includes dedicated application codeblocks, tradeoff analysis, and common bugs. | Written to `questions.md` with syntax-highlighted codeblocks. Delivered via chosen format. |
 | **Hydra Remediation Drill** | `NN-module/questions.md` | Triggered if any check-in question is missed. Enforces **100% mastery**. | **2 new targeted drill questions per missed item**. | Appended to `questions.md`. Delivered via chosen format until 100%. Struggles logged to `agent_notes.md`. |
-| **Module Re-quiz** | `NN-module/questions.md` | Comprehensive retention and synthesis test across all lessons in the module. | **~20 Fresh Questions**: Brand new scenarios testing integration across the entire module. | Written to `questions.md` & delivered in chunks (Modal or Checkbox). |
+| **Module Re-quiz** | `NN-module/questions.md` | Comprehensive retention and synthesis test across all lessons in the module. | **~20 Fresh Questions**: Brand new scenarios testing integration across the entire module. | Written to `questions.md` & delivered in chunks (Built-in Tool or Checkbox). |
 | **Course Major Quiz** | Root `notes/questions.md` | Comprehensive capstone evaluation covering all modules in the course. | **35–65 Questions** (Scaled to size: ~35 for 5-lesson courses, up to ~65 for 15+ lesson courses). Fresh real-world problems. | Written to root `questions.md` & chunked via chosen format. Final mastery summary logged to `agent_notes.md`. |
 
 ---
@@ -81,13 +81,13 @@ flowchart TD
 
 ---
 
-## 3. Question Delivery Modes: Interactive Modal vs. Markdown Checkboxes
+## 3. Question Delivery Modes: Built-in Question Tool vs. Markdown Checkboxes
 
 Quizzes can be delivered in one of two modes based on the learner preference set during initial grilling and recorded in root `agent_notes.md`:
 
-### Mode A: Interactive UI Modal (`ask_question`)
+### Mode A: Built-in Question Tool (`ask_question`)
 1. **Write Questions to `questions.md`**: Format questions with full syntax-highlighted codeblocks and clear options.
-2. **Deliver via `ask_question`**: Prompt questions in chunks of 3–5 using the clickable UI harness so the user clicks their choices.
+2. **Deliver via `ask_question`**: Prompt questions in chunks of 3–5 using the built-in question tool so the user selects their choices.
 3. **Instant Evaluation**: Grade user answers, record results (`[CORRECT]` / `[INCORRECT]`) and explanations directly in `questions.md`.
 
 ### Mode B: Markdown Checkbox Mode (`- [ ]` in `questions.md`) (Token-Efficient)
@@ -133,7 +133,7 @@ Quizzes can be delivered in one of two modes based on the learner preference set
 
 ```mermaid
 flowchart TD
-    Submit["User Submits Quiz (Modal or [x] in questions.md)"] --> Grade["Grade Answers & Update questions.md"]
+    Submit["User Submits Quiz (Built-in Tool or [x] in questions.md)"] --> Grade["Grade Answers & Update questions.md"]
     Grade --> Check{"All Correct (100%)?"}
     Check -- Yes --> Pass["[PASSED - 100% MASTERY]<br/>Advance overview.md Position"]
     Check -- No --> LogStruggle["Log Struggle & Misconception in Root agent_notes.md"]
@@ -155,7 +155,7 @@ flowchart TD
    - If 2 questions missed: generate 4 fresh drill questions.
 4. **Append Drills to `questions.md`**:
    - If in Markdown Checkbox Mode: write options with `- [ ]`.
-   - If in Modal Mode: write options and prompt via `ask_question`.
+   - If in Built-in Tool Mode: write options and prompt via `ask_question`.
    ```markdown
    #### Hydra Remediation Drill: [Topic / Misconception Name]
    *(2 targeted questions spawned to achieve 100% mastery)*
