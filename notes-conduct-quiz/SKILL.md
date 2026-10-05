@@ -41,6 +41,10 @@ Quizzes are delivered using the learner's preferred mode recorded in root `agent
 > Never force the student to guess. Selecting `"I'm not sure"` signals an honest knowledge boundary and instructs the binary search to step down to earlier/foundational topics.
 
 > [!IMPORTANT]
+> **UNIFORM ANSWER DISTRIBUTION ON DIAGNOSTICS (33.3% SPLIT ACROSS A, B, C)**:
+> Since Option D is reserved for `"I'm not sure"`, the correct answer MUST be evenly distributed across Options A, B, and C with ~33.3% probability each. **NEVER bias diagnostic questions toward Option A**.
+
+> [!IMPORTANT]
 > **STRICT SIZING: 6 TO 8 QUESTIONS (NEVER TERMINATE AT 3–4)**:
 > Pure mathematical binary search can terminate in 3–4 steps, but that is too brittle for learning (one lucky guess skews the baseline). 
 > **Every diagnostic test MUST deliver 6 to 8 questions total** using the two-phase protocol:
@@ -206,4 +210,18 @@ flowchart TD
 4. **Evaluation Formatting Rule (Mandatory Blockquotes `> `)**:
    - Always format evaluation feedback (in terminal/chat turns and within `questions.md`) using markdown blockquotes (`> `).
    - This indents the feedback, separates it visually from the question stem and code snippets, and renders it in a distinct, accented theme color for high legibility.
+5. **Mandatory 25% Uniform Probability Answer Distribution (Strict Prohibition of Option A Bias)**:
+   - **The Problem**: AI models suffer from severe default positioning bias, frequently placing the correct answer in Option A. This makes quizzes predictable, artificial, and destroys assessment integrity.
+   - **The 25% Probability Rule**: For all 4-choice questions (check-ins, drills, module re-quizzes, course major quizzes), the correct answer position MUST be evenly distributed across all 4 slots:
+     - **Option A**: ~25%
+     - **Option B**: ~25%
+     - **Option C**: ~25%
+     - **Option D**: ~25%
+   - **Strict Anti-Clustering Protocol**:
+     - Never make Option A the correct answer for consecutive questions.
+     - Never place the correct answer in the same letter for more than two questions in a row.
+     - When generating any batch of questions, explicitly draft and balance the answer key across positions:
+       - *Example 6-question check-in key*: Q1: C, Q2: A, Q3: D, Q4: B, Q5: D, Q6: B.
+       - *Example 8-question check-in key*: Q1: B, Q2: D, Q3: A, Q4: C, Q5: B, Q6: A, Q7: D, Q8: C.
+   - **Self-Audit Before Prompting**: Before presenting or writing any quiz set, count your correct answer letters. If Option A represents >30% of the answers in a 4-choice set, you MUST shuffle option positions to restore an equal 25% distribution.
 

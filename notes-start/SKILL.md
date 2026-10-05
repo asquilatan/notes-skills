@@ -98,7 +98,7 @@ Once the grill finishes:
    - **Strict Sizing (6 to 8 questions total)**: NEVER terminate at 3–4 questions.
    - **Phase 1 (Q1 to Q4)**: Binary search jumps to locate the candidate frontier (Step up on correct; step down on incorrect or `"I'm not sure"`).
    - **Phase 2 (Q5 to Q8)**: Corroboration & boundary verification to eliminate lucky guesses and confirm stable baseline.
-   - **Crucial Rule**: Every diagnostic question **MUST include Option 4 (Option D) as `"I'm not sure"`**, with Options A, B, and C strictly balanced in length and plausibility.
+   - **Crucial Rule**: Every diagnostic question **MUST include Option 4 (Option D) as `"I'm not sure"`**, with Options A, B, and C strictly balanced in length, plausibility, and uniform ~33.3% probability (never biased toward Option A).
    - Deliver into root `notes/questions.md` via the learner's chosen mode (Built-in Tool or `- [ ]` Checkboxes).
 4. Record all questions, user answers, and correct explanations directly in `notes/questions.md`, formatting evaluations with markdown blockquotes (`> `).
 5. Record the verified frontier in `notes/agent_notes.md` and designate it as the starting module for the course.
@@ -138,7 +138,7 @@ When initiating a module:
 1. Create the module directory inside the project workspace (e.g., `./01-foundations-of-laravel/`).
 2. **Do NOT create `notes.md` in the module**: Module files are strictly `overview.md`, `questions.md`, and lesson files.
 3. Invoke `notes-conduct-quiz` to run the **Module Diagnostic Quiz** (adaptive binary search within module scope):
-   - **Crucial Rule**: Every diagnostic question **MUST include Option 4 (Option D) as `"I'm not sure"`**.
+   - **Crucial Rule**: Every diagnostic question **MUST include Option 4 (Option D) as `"I'm not sure"`**, with correct answers balanced evenly across Options A, B, and C (~33.3% each).
    - Written to `01-.../questions.md` and delivered via chosen mode (Built-in Tool or Checkbox).
 4. Evaluate user answers, log results in `questions.md` using markdown blockquotes (`> `), and record baseline observations in root `agent_notes.md`.
 5. Invoke `notes-create-outline` to generate `01-.../overview.md` containing:
@@ -186,7 +186,7 @@ For each lesson in the module:
 3. **User Signal**: The user tells the harness in terminal that they are **"ready"** or finished reading.
 4. **Trigger Check-in (Per User Preference)**:
    - Inspect `overview.md` to identify the active lesson.
-   - Invoke `notes-conduct-quiz` to format a **6–10 question check-in quiz** into **`questions.md`**.
+   - Invoke `notes-conduct-quiz` to format a **6–10 question check-in quiz** into **`questions.md`** with **mandatory uniform 25% distribution** across all four options (A: ~25%, B: ~25%, C: ~25%, D: ~25%; strictly zero Option A bias or clustering).
    - If user prefers **Built-in Question Tool**: deliver via `ask_question` in chunks of 3–5.
    - If user prefers **Markdown Checkboxes**: format with `- [ ]` checkboxes in `questions.md`, prompt student to mark `[x]` and reply 'done', then evaluate with `view_file`.
 5. **The Hydra 100% Mastery Loop**:
@@ -194,7 +194,7 @@ For each lesson in the module:
    - If score is 100%: Mark as passed and advance `overview.md` (`:::done` on finished lesson, `:::current` on next).
    - If any question is missed:
      - **Log struggle**: Immediately record the diagnosed misconception in root `agent_notes.md` under `## Learner Observations & Struggle Points`.
-     - **Activate Hydra**: For every 1 wrong answer, spawn **2 new targeted drill questions** into `questions.md` and deliver via the preferred mode. Quizzing repeats until 100% mastery is achieved.
+     - **Activate Hydra**: For every 1 wrong answer, spawn **2 new targeted drill questions** into `questions.md` and deliver via the preferred mode (maintaining balanced answer distribution). Quizzing repeats until 100% mastery is achieved.
 
 ---
 
@@ -208,6 +208,7 @@ When the user finishes the last lesson in a module:
 2. **Module Re-quiz (~20 fresh questions)**:
    - Invoke `notes-conduct-quiz` to conduct a comprehensive **Module Re-quiz (~20 fresh questions)** formatted in `questions.md` and delivered via preferred mode in chunks.
    - **Crucial Rule**: Use **brand new questions** testing cross-lesson application and synthesis (never repeat previous quiz items verbatim).
+   - **Answer Distribution**: Strictly distribute correct answer positions across A, B, C, and D (~25% each; no Option A clustering).
 3. **Module Completion**:
    - When passed, mark the entire module as completed (`:::done`) in the root `overview.md`.
    - Update module progress status in root `agent_notes.md`.
@@ -217,5 +218,5 @@ When the user finishes the last lesson in a module:
 ### Step 8: Course Major Capstone Quiz
 Once all modules in the course are completed:
 1. Target root `notes/questions.md`.
-2. Invoke `notes-conduct-quiz` to generate a comprehensive **Course Major Quiz (35–65 fresh questions)** scaled to course size (~35 for ~5 lesson courses, up to ~65 for 15+ lesson courses).
+2. Invoke `notes-conduct-quiz` to generate a comprehensive **Course Major Quiz (35–65 fresh questions)** scaled to course size (~35 for ~5 lesson courses, up to ~65 for 15+ lesson courses), strictly enforcing uniform 25% correct answer distribution across A, B, C, and D.
 3. Deliver questions via preferred mode in chunks, record detailed explanations in root `notes/questions.md`, and log final mastery reflections in root `notes/agent_notes.md`.
