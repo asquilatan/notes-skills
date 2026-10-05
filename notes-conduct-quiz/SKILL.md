@@ -109,10 +109,10 @@ flowchart TD
    });
    ```
    What must the handler emit if `Sec-WebSocket-Version` is `8`?
-   - A) HTTP 400 Bad Request
-   - B) HTTP 426 Upgrade Required with Sec-WebSocket-Version: 13
-   - C) HTTP 101 Switching Protocols
-   - D) Emit socket 'error' and terminate immediately
+   - A) Emit HTTP 400 Bad Request indicating the client version is malformed
+   - B) Emit HTTP 426 Upgrade Required requesting Sec-WebSocket-Version 13
+   - C) Emit HTTP 101 Switching Protocols and negotiate a legacy handshake
+   - D) Emit socket 'error' and terminate the TCP connection immediately
    ````
 3. **Prompt via Clickable Modal (`ask_question`)**:
    Prompt the questions in chunks of 3–5 so the student can simply click their choices.
@@ -171,3 +171,14 @@ flowchart TD
 2. **Chunking Large Quizzes**:
    - Chunk large quizzes via `ask_question` into manageable sets of 3–5 questions per turn so the student isn't overwhelmed.
    - Progressively write results to `questions.md` after each chunk.
+3. **Question Layout & Option Symmetry (Anti-Test-Wiseness Protocol)**:
+   - **Option Length Parity**: Keep all option choices (A, B, C, D) balanced in character and word count (within ~15–20% length variance). Never make the correct answer substantially longer or shorter than the distractors.
+   - **Avoid Artificially Lengthened Specificity**: Never overload the correct choice with defensive qualifiers, granular mechanics, or hyper-specific parentheticals while leaving distractors curt or superficial. If technical context is required, place the context in the question stem rather than bloating the correct option.
+   - **Plausible & Technically Credible Distractors**: Distractors must represent genuine real-world misconceptions, adjacent architectural patterns, or believable edge-case failures. Avoid caricature or obviously fabricated choices (e.g. "CSS styles cached in hardware GPU cache" or "browser C++ DOM tree crashed").
+   - **Syntactical & Grammatical Parallelism**: Ensure all options start with the same part of speech (e.g., all active verbs, all noun phrases, or all causal clauses) and share parallel grammatical structure.
+   - **Clean Layout**:
+     - *Context/Scenario*: Present background context clearly.
+     - *Code/Snippet*: If applicable, format cleanly above the question prompt.
+     - *Prompt*: Crisp, direct interrogative sentence.
+     - *Options*: Formatted cleanly as `- A) ...`, `- B) ...`, etc.
+

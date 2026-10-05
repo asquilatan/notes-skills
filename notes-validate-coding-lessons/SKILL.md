@@ -37,6 +37,7 @@ flowchart TD
   2. **API & Version Accuracy**: Do the described methods, configuration parameters, and protocol mechanisms match the designated version (e.g., RFC 6455, Laravel 11, Node 20)?
   3. **Factual Integrity of Mechanisms**: Are architectural claims, lifecycle states, and internal mechanisms factually true to how the technology operates?
   4. **Command & Output Realism**: Do CLI commands and expected terminal/wire outputs match real-world execution?
+  5. **Bidirectional Navigation Links**: Does every lesson file have the top back-link (`[← Previous: ...]`) and bottom forward-link (`[Next: ... →]`) with valid relative Markdown links forming a clean `01 <-> 02 <-> 03` chain?
 
 ---
 

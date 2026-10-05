@@ -32,6 +32,8 @@ Use this skill to generate the complete set of lesson files for non-coding modul
 
 2. **Standard Non-Code Lesson Skeleton**:
    ```markdown
+   [← Previous: 01-why-sourdough-fermentation-works.md](./01-why-sourdough-fermentation-works.md) | [Overview](./overview.md)
+
    # Title in Title Case
 
    <1-2 paragraph bridge linking from previous lesson + what this lesson covers. Direct "you" and "we" voice.>
@@ -56,8 +58,23 @@ Use this skill to generate the complete set of lesson files for non-coding modul
 
    <Senior artisan aside: "I usually prefer...", "I always let the mold sit for...">
 
-   <Close with forward link + transition: "In the next lesson, we will explore...">
+   <Close with forward transition paragraph: "In the next lesson, we will explore...">
+
+   ---
+   [Next: 03-bulk-fermentation-and-stretch-and-fold.md →](./03-bulk-fermentation-and-stretch-and-fold.md)
    ```
+
+3. **Bidirectional Lesson Navigation (`<->`) (Mandatory Default)**:
+   Every lesson file MUST include top and bottom relative markdown links creating a seamless navigation chain:
+   - **Top Back-Link (Header)**:
+     - Placed at the very top of the markdown file (Line 1).
+     - **Lesson 01**: `[← Back to Overview](./overview.md)`
+     - **Lesson 02 onward**: `[← Previous: NN-previous-lesson.md](./NN-previous-lesson.md) | [Overview](./overview.md)`
+   - **Bottom Forward-Link (Footer)**:
+     - Placed at the very end of the file following a horizontal rule (`---`).
+     - **Lesson 01 to (N-1)**: `[Next: NN-next-lesson.md →](./NN-next-lesson.md)`
+     - **Final Lesson (N)**: `[Next: Module Overview & Quizzes →](./overview.md)`
+
 
 ---
 
@@ -124,7 +141,7 @@ Never jump straight into complex chemistry, exact industrial ratios, or niche to
 1. Read the target module's `overview.md` to identify the full list of planned lessons.
 2. Confirm the craft's required tools, safety considerations, and materials.
 3. Generate each lesson file in sequence from `01-...md` to `0N-...md`.
-4. Ensure cross-file links are intact (Lesson 01 points to Lesson 02, etc.).
+4. Ensure bidirectional navigation links are intact (`01 <-> 02 <-> 03...`) with top back-links and bottom forward-links using valid relative file paths.
 5. Ensure lesson files contain **pure lesson content** (all quizzes, doubts, and check-ins belong exclusively in `questions.md`).
 6. Once written, invoke `notes-validate-general-lessons` to audit the module before user study begins.
 

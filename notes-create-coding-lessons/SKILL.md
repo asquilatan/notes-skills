@@ -32,6 +32,8 @@ Use this skill to generate the complete set of lesson files for code-based and s
 
 2. **Standard Lesson Skeleton**:
    ```markdown
+   [← Previous: 01-what-is-laravel.md](./01-what-is-laravel.md) | [Overview](./overview.md)
+
    # Title in Title Case
 
    <1-2 paragraph bridge linking from previous lesson + what this lesson covers. Direct "you" and "we" voice.>
@@ -52,8 +54,23 @@ Use this skill to generate the complete set of lesson files for code-based and s
 
    <Senior dev aside: "I usually prefer...", "I just added X here so you can see...">
 
-   <Close with forward link + transition: "In the next lesson, we will explore...">
+   <Close with forward transition paragraph: "In the next lesson, we will explore...">
+
+   ---
+   [Next: 03-mvc-how-it-works.md →](./03-mvc-how-it-works.md)
    ```
+
+3. **Bidirectional Lesson Navigation (`<->`) (Mandatory Default)**:
+   Every lesson file MUST include top and bottom relative markdown links creating a seamless navigation chain:
+   - **Top Back-Link (Header)**:
+     - Placed at the very top of the markdown file (Line 1).
+     - **Lesson 01**: `[← Back to Overview](./overview.md)`
+     - **Lesson 02 onward**: `[← Previous: NN-previous-lesson.md](./NN-previous-lesson.md) | [Overview](./overview.md)`
+   - **Bottom Forward-Link (Footer)**:
+     - Placed at the very end of the file following a horizontal rule (`---`).
+     - **Lesson 01 to (N-1)**: `[Next: NN-next-lesson.md →](./NN-next-lesson.md)`
+     - **Final Lesson (N)**: `[Next: Module Overview & Quizzes →](./overview.md)`
+
 
 ---
 
@@ -130,7 +147,7 @@ Never jump straight into protocol wire headers, raw byte layouts, or complex con
 1. Read the target module's `overview.md` to identify the full list of planned lessons.
 2. Verify the project stack, runtime versions, and file structure.
 3. Generate each lesson file in sequence from `01-...md` to `0N-...md`.
-4. Ensure cross-file links are intact (Lesson 01 points to Lesson 02, etc.).
+4. Ensure bidirectional navigation links are intact (`01 <-> 02 <-> 03...`) with top back-links and bottom forward-links using valid relative file paths.
 5. Ensure lesson files contain **pure lesson content** (all quizzes, doubts, and check-ins belong exclusively in `questions.md`).
 6. Once written, invoke `notes-validate-coding-lessons` to audit the module before user study begins.
 

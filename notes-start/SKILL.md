@@ -90,7 +90,7 @@ Once the grill finishes:
    - **Strict Sizing (6 to 8 questions total)**: NEVER terminate at 3–4 questions.
    - **Phase 1 (Q1 to Q4)**: Binary search jumps to locate the candidate frontier (Step up on correct; step down on incorrect or `"I'm not sure"`).
    - **Phase 2 (Q5 to Q8)**: Corroboration & boundary verification to eliminate lucky guesses and confirm stable baseline.
-   - **Crucial Rule**: Every diagnostic question **MUST include Option 4 (Option D) as `"I'm not sure"`**.
+   - **Crucial Rule**: Every diagnostic question **MUST include Option 4 (Option D) as `"I'm not sure"`**, with Options A, B, and C strictly balanced in length and plausibility.
    - Prompt questions using the interactive `ask_question` harness tool.
 4. Record all questions, user answers, and correct explanations directly in `notes/notes.md`.
 5. Designate the verified frontier as the starting module for the course.
@@ -169,7 +169,7 @@ For each lesson in the module:
 3. **User Signal**: The user tells the harness in terminal that they are **"ready"** or finished reading.
 4. **Trigger Check-in (Dual-Channel)**:
    - Inspect `overview.md` to identify the active lesson.
-   - Invoke `notes-conduct-quiz` to format a **6–10 question check-in quiz** (including dedicated application codeblocks) into **`questions.md`**.
+   - Invoke `notes-conduct-quiz` to format a **6–10 question check-in quiz** (including dedicated application codeblocks and strictly balanced option lengths / plausible distractors) into **`questions.md`**.
    - Simultaneously render the interactive clickable modal via `ask_question` in chunks of 3–5 so the student clicks their answers without typing.
 5. **The Hydra 100% Mastery Loop**:
    - As answers arrive, grade them and update `questions.md` with results and explanations.

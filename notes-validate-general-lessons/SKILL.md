@@ -38,6 +38,7 @@ flowchart TD
   2. **Scientific & Physical Mechanism Truth**: Are explanations of *why* things happen physically or chemically true (e.g. yeast biology, cement hydration, saponification, fragrance volatility curves)?
   3. **Craft Realism & Viability**: Does the sequence of physical actions reflect genuine workshop/kitchen practice without omitting critical real-world steps?
   4. **Safety Realism**: Are safety warnings, curing hazards, or toxicity facts accurate and clearly stated where relevant?
+  5. **Bidirectional Navigation Links**: Does every lesson file have the top back-link (`[← Previous: ...]`) and bottom forward-link (`[Next: ... →]`) with valid relative Markdown links forming a clean `01 <-> 02 <-> 03` chain?
 
 ---
 
