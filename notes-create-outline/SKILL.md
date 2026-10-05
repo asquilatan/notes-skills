@@ -144,10 +144,10 @@ graph TD
 
 1. **Primitives & Foundations** (`01-primitives-and-foundations/`) - [1-3 sentences describing the topic, what it tackles, and what it includes.]
 2. **Reactive State Engine** (`02-reactive-state-engine/`) - [1-3 sentences describing the topic, what it tackles, and what it includes.]
-3. **External Sync & Side Effects** (`03-external-sync-and-side-effects/`) - [1-3 sentences describing the topic, what it tackles, and what it includes.]
-4. **Spatial & Component Architecture** (`04-spatial-and-component-architecture/`) - [1-3 sentences describing the topic, what it tackles, and what it includes.]
-5. **Data Mutations & Form Actions** (`05-data-mutations-and-form-actions/`) - [1-3 sentences describing the topic, what it tackles, and what it includes.]
-6. **Full-Stack Integration & Production Scale** (`06-full-stack-integration-and-production-scale/`) - [1-3 sentences describing the topic, what it tackles, and what it includes.]
+3. **External Sync & Side Effects** (`03-external-sync-effects/`) - [1-3 sentences describing the topic, what it tackles, and what it includes.]
+4. **Spatial & Component Architecture** (`04-component-architecture/`) - [1-3 sentences describing the topic, what it tackles, and what it includes.]
+5. **Data Mutations & Form Actions** (`05-mutations-and-actions/`) - [1-3 sentences describing the topic, what it tackles, and what it includes.]
+6. **Full-Stack Integration & Production Scale** (`06-production-scale/`) - [1-3 sentences describing the topic, what it tackles, and what it includes.]
 ```
 
 ---
@@ -161,8 +161,8 @@ When creating a specific module folder (e.g. `01-module-name/`):
 01-module-name/
   overview.md       # Module roadmap, lesson DAG dependency graph, lesson descriptions
   questions.md      # All Q&A and quizzes: Student doubts, check-ins with codeblocks, Hydra drills, and re-quizzes
-  01-descriptive-phrase-topic.md
-  02-descriptive-phrase-topic.md
+  01-concise-slug.md
+  02-concise-slug.md
   ...
 ```
 
@@ -189,14 +189,14 @@ graph TD
     L03 --> L04
 ```
 
-**Current Position**: `Anatomy of Core Primitives` (`01-anatomy-of-core-primitives.md`) - Ready to start
+**Current Position**: `Anatomy of Core Primitives` (`01-core-primitives.md`) - Ready to start
 
 ## Lessons Breakdown
 
-1. **Anatomy of Core Primitives** (`01-anatomy-of-core-primitives.md`) - [1-3 sentences describing the topic, what it tackles, and what it includes.]
-2. **Protocol Challenge Derivation** (`02-protocol-challenge-derivation.md`) - [1-3 sentences describing the topic, what it tackles, and what it includes.]
-3. **Negotiation & Subprotocol Handlers** (`03-negotiation-and-subprotocol-handlers.md`) - [1-3 sentences describing the topic, what it tackles, and what it includes.]
-4. **Stream Detachment & Error Rejections** (`04-stream-detachment-and-error-rejections.md`) - [1-3 sentences describing the topic, what it tackles, and what it includes.]
+1. **Anatomy of Core Primitives** (`01-core-primitives.md`) - [1-3 sentences describing the topic, what it tackles, and what it includes.]
+2. **Protocol Challenge Derivation** (`02-protocol-challenges.md`) - [1-3 sentences describing the topic, what it tackles, and what it includes.]
+3. **Negotiation & Subprotocol Handlers** (`03-subprotocol-handlers.md`) - [1-3 sentences describing the topic, what it tackles, and what it includes.]
+4. **Stream Detachment & Error Rejections** (`04-error-rejections.md`) - [1-3 sentences describing the topic, what it tackles, and what it includes.]
 ```
 
 ---
@@ -206,10 +206,17 @@ graph TD
 1. **Human-Readable Diagram Nodes (Strict)**:
    - All Mermaid graph node labels MUST be human-readable Title Case names (e.g. `01: Primitives & Foundations (Current)`).
    - **NEVER** put raw kebab-case filenames (like `01-primitives-and-foundations`) inside the Mermaid graph nodes.
-2. **File and Folder Naming Rule**:
-   - The actual folder and file names on disk are derived directly from the Title Case node title by:
-     - Lowercasing and converting spaces to hyphens (`kebab-case`).
-     - Prepending the zero-padded index number (e.g., `01-primitives-and-foundations/` or `01-anatomy-of-core-primitives.md`).
+2. **File and Folder Naming Rule (Strict 2–4 Word Slug Limit)**:
+   - While Mermaid node titles, breakdown titles, and markdown `# Headings` can be full, rich, and comprehensive (e.g., `04: Multi-Step State Transitions & Matrix Multiplication`), the **filename on disk MUST be trimmed to a concise 2–4 word kebab-case slug** (e.g., `04-matrix-multiplication.md`).
+   - Format: `NN-concise-slug.md` (where `concise-slug` is strictly **2 to 4 words**).
+   - **Allowed Filename Examples**:
+     - `04-matrix-multiplication.md` (2 words)
+     - `03-stochastic-simulation.md` (2 words)
+     - `04-weather-simulator.md` (2 words)
+     - `01-what-is-laravel.md` (3 words)
+   - **Strictly Forbidden Filename Anti-Patterns**:
+     - *Overkill run-on filenames (5+ words are FORBIDDEN)*: e.g. `04-multi-step-state-transitions-and-matrix-multiplication.md` (overkill; use `04-matrix-multiplication.md`), `03-algorithmic-state-sampling-and-stochastic-simulation.md` (overkill; use `03-stochastic-simulation.md`), `04-building-the-5-day-weather-simulator-and-verifying-analytical-predictions.md` (overkill; use `04-weather-simulator.md`).
+     - *Vague 1-word filenames (FORBIDDEN)*: `01-intro.md` or `02-basics.md`.
 3. **Node Description Format in Breakdowns**:
    - Numbered list item: `1. **Title Case Name** (`NN-kebab-phrase/` or `NN-kebab-phrase.md`) - 1 to 3 sentences describing the topic, what it tackles, and what it includes.`
 4. **Updating the Dependency Graph**:

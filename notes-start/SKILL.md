@@ -144,7 +144,7 @@ When initiating a module:
 5. Invoke `notes-create-outline` to generate `01-.../overview.md` containing:
    - Module objective summary.
    - Lesson Mermaid dependency graph (`L01["Title Case Phrase (Current)"]:::current --> L02["Title Case Phrase"]:::pending`).
-   - Descriptive phrase numbered list (1-3 sentences per lesson).
+   - Descriptive phrase numbered list with concise 2–4 word filenames (`1. **Full Title** (01-concise-slug.md) - ...`).
 
 ---
 
@@ -164,7 +164,7 @@ When initiating a module:
 1. **Delegate Lesson Content Creation (Subagent 1 - Independent Creator)**:
    - **For Software / Code Topics**: Invoke a subagent (`invoke_subagent`) using **`notes-create-coding-lessons`** (runnable code snippets, after-code translations, dev-to-dev stance).
    - **For Practical Craft / Non-Code Topics** (e.g. baking, concrete molding, perfumery, cooking, carpentry): Invoke a subagent (`invoke_subagent`) using **`notes-create-general-lessons`** (action protocols, sensory checks, broken-case recoveries, artisan-to-apprentice stance).
-   - The subagent authors all sequenced lesson files (`01-...md` to `0n-...md`) inside the module directory.
+   - The subagent authors all sequenced lesson files inside the module directory, strictly enforcing the **concise 2–4 word filename slug limit** (`01-concise-slug.md` to `0n-concise-slug.md`). Overkill run-on filenames (5+ words) are strictly forbidden.
    - **Mandatory Rule for Lesson 01**: Lesson 01 MUST always be the background onboarding lesson that gently eases the student in. It explains what existed before (status quo), why it broke down (pain points), and why this technology or craft was created (the "Why") before introducing any complex syntax or low-level mechanics.
 2. **Delegate Technical / Craft Validation (Subagent 2 - Strictly Different Subagent)**:
    - Once Subagent 1 finishes, invoke a **completely new, separate subagent** (`invoke_subagent`).

@@ -1,6 +1,6 @@
 ---
 name: notes-create-coding-lessons
-description: "Generates sequenced lesson files (01-...md to 0n-...md) for programming, software engineering, and code-based modules based on overview.md. Enforces descriptive phrase naming, runnable code examples, after-code translations, zero unexplained jargon, 2-4 sentence paragraphs, and a patient 'one dev teaching another' voice."
+description: "Generates sequenced lesson files (01-...md to 0n-...md) for programming, software engineering, and code-based modules based on overview.md. Enforces concise 2-4 word filename slugs, runnable code examples, after-code translations, zero unexplained jargon, 2-4 sentence paragraphs, and a patient 'one dev teaching another' voice."
 license: MIT
 metadata:
   author: user
@@ -19,16 +19,22 @@ Use this skill to generate the complete set of lesson files for code-based and s
 
 ## 1. File Naming & Structure
 
-1. **Descriptive Phrase Naming**:
-   - Files MUST use zero-padded numbers and descriptive kebab-case phrases.
-   - Example:
+1. **Concise Phrase Filename Naming (Strict 2–4 Word Limit)**:
+   - Filenames on disk MUST use zero-padded numbers and concise kebab-case slugs strictly capped at **2 to 4 words** (excluding the numeric prefix).
+   - *Internal Title vs. Filename*: While the `# Lesson Heading` inside the file, the Mermaid node title, and the overview breakdown can be full, descriptive, and comprehensive, the **filename itself must be punchy and trimmed to the core 2–4 words**.
+   - **Allowed Filename Examples (2–4 words)**:
      ```
-     01-what-is-laravel.md
-     02-laravel-libraries-features.md
-     03-mvc-how-it-works.md
-     04-routing-and-controller-basics.md
+     01-what-is-laravel.md           # 3 words
+     02-core-library-features.md     # 3 words
+     03-how-mvc-works.md             # 3 words
+     04-routing-and-controllers.md   # 3 words
+     03-stochastic-simulation.md     # 2 words
+     04-matrix-multiplication.md     # 2 words
+     04-weather-simulator.md         # 2 words
      ```
-   - Avoid single words or vague titles (`01-intro.md` or `02-basics.md` are forbidden).
+   - **Strictly Forbidden Filename Anti-Patterns**:
+     - *Overkill run-on filenames (5+ words are FORBIDDEN)*: e.g. `04-multi-step-state-transitions-and-matrix-multiplication.md` (overkill; use `04-matrix-multiplication.md`), `03-algorithmic-state-sampling-and-stochastic-simulation.md` (overkill; use `03-stochastic-simulation.md`), `04-building-the-5-day-weather-simulator-and-verifying-analytical-predictions.md` (overkill; use `04-weather-simulator.md`).
+     - *Vague 1-word filenames (FORBIDDEN)*: `01-intro.md` or `02-basics.md`.
 
 2. **Standard Lesson Skeleton**:
    ```markdown

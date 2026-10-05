@@ -43,6 +43,7 @@ flowchart TD
   3. **Factual Integrity of Mechanisms**: Are architectural claims, lifecycle states, and internal mechanisms factually true to how the technology operates?
   4. **Command & Output Realism**: Do CLI commands and expected terminal/wire outputs match real-world execution?
   5. **Bidirectional Navigation Links**: Does every lesson file have the top back-link (`[← Previous: ...]`) and bottom forward-link (`[Next: ... →]`) with valid relative Markdown links forming a clean `01 <-> 02 <-> 03` chain?
+  6. **Concise Filename Slugs (2–4 Words)**: Confirm that all lesson filenames adhere strictly to the **2 to 4 word limit** (excluding the `NN-` number prefix) and do not contain bloated, run-on phrases (5+ words). If a filename is bloated (e.g. `04-multi-step-state-transitions-and-matrix-multiplication.md`), rename it to a concise 2–4 word slug (e.g. `04-matrix-multiplication.md`) and update relative links.
 
 ---
 

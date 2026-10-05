@@ -44,6 +44,7 @@ flowchart TD
   3. **Craft Realism & Viability**: Does the sequence of physical actions reflect genuine workshop/kitchen practice without omitting critical real-world steps?
   4. **Safety Realism**: Are safety warnings, curing hazards, or toxicity facts accurate and clearly stated where relevant?
   5. **Bidirectional Navigation Links**: Does every lesson file have the top back-link (`[← Previous: ...]`) and bottom forward-link (`[Next: ... →]`) with valid relative Markdown links forming a clean `01 <-> 02 <-> 03` chain?
+  6. **Concise Filename Slugs (2–4 Words)**: Confirm that all lesson filenames adhere strictly to the **2 to 4 word limit** (excluding the `NN-` number prefix) and do not contain bloated, run-on phrases (5+ words). If a filename is bloated (e.g. `03-bulk-fermentation-and-stretch-and-fold.md`), rename it to a concise 2–4 word slug (e.g. `03-bulk-fermentation.md`) and update relative links.
 
 ---
 

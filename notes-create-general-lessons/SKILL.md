@@ -1,6 +1,6 @@
 ---
 name: notes-create-general-lessons
-description: "Generates sequenced lesson files (01-...md to 0n-...md) for non-code and real-world topics (e.g. baking, cooking, concrete molding, perfumery, honey making, carpentry). Enforces descriptive phrase naming, structured execution protocols, sensory verification checks, broken cases & recoveries, and a patient 'senior artisan teaching an apprentice' voice."
+description: "Generates sequenced lesson files (01-...md to 0n-...md) for non-code and real-world topics (e.g. baking, cooking, concrete molding, perfumery, honey making, carpentry). Enforces concise 2-4 word filename slugs, structured execution protocols, sensory verification checks, broken cases & recoveries, and a patient 'senior artisan teaching an apprentice' voice."
 license: MIT
 metadata:
   author: user
@@ -19,16 +19,19 @@ Use this skill to generate the complete set of lesson files for non-coding modul
 
 ## 1. File Naming & Structure
 
-1. **Descriptive Phrase Naming**:
-   - Files MUST use zero-padded numbers and descriptive kebab-case phrases.
-   - Example:
+1. **Concise Phrase Filename Naming (Strict 2–4 Word Limit)**:
+   - Filenames on disk MUST use zero-padded numbers and concise kebab-case slugs strictly capped at **2 to 4 words** (excluding the numeric prefix).
+   - *Internal Title vs. Filename*: While the `# Lesson Heading` inside the file, the Mermaid node title, and the overview breakdown can be full, descriptive, and comprehensive, the **filename itself must be punchy and trimmed to the core 2–4 words**.
+   - **Allowed Filename Examples (2–4 words)**:
      ```
-     01-why-sourdough-fermentation-works.md
-     02-flour-hydration-and-gluten-networks.md
-     03-bulk-fermentation-and-stretch-and-fold.md
-     04-shaping-banneton-proofing-and-baking.md
+     01-why-sourdough-works.md       # 3 words
+     02-flour-and-hydration.md       # 3 words
+     03-bulk-fermentation.md         # 2 words
+     04-proofing-and-baking.md       # 3 words
      ```
-   - Avoid vague single words (e.g. `01-intro.md` or `02-basics.md` are forbidden).
+   - **Strictly Forbidden Filename Anti-Patterns**:
+     - *Overkill run-on filenames (5+ words are FORBIDDEN)*: e.g. `03-bulk-fermentation-and-stretch-and-fold.md` (overkill; use `03-bulk-fermentation.md`), `04-shaping-banneton-proofing-and-baking.md` (overkill; use `04-proofing-and-baking.md`), `02-flour-hydration-and-gluten-networks.md` (overkill; use `02-flour-and-hydration.md`).
+     - *Vague 1-word filenames (FORBIDDEN)*: `01-intro.md` or `02-basics.md`.
 
 2. **Standard Non-Code Lesson Skeleton**:
    ```markdown
