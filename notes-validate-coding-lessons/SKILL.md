@@ -15,6 +15,11 @@ Use this skill to audit and fact-check the code, APIs, and technical explanation
 > This skill validates **only the target module** (e.g., `./01-module/`) inside the user's **active project workspace (Current Working Directory)**.
 > **NEVER** inspect or edit files inside `~/.agents/` or `~/.gemini/`.
 
+> [!IMPORTANT]
+> **MANDATORY DISTINCT SUBAGENT ENFORCEMENT**:
+> The technical auditor MUST be a **completely different, freshly invoked subagent instance** from the subagent that authored the lessons.
+> **NEVER** reuse the creator subagent to audit its own code. An independent subagent guarantees unbiased syntax verification and prevents confirmation bias.
+
 ---
 
 ## 1. Single Subagent Verification Workflow

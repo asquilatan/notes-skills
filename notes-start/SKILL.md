@@ -151,18 +151,26 @@ When initiating a module:
 ### Step 5: Lesson Generation & Validation (Dynamic Subagent Delegation)
 
 > [!IMPORTANT]
-> **ORCHESTRATOR ROLE**:
-> The orchestrator does NOT write lesson content or edit lesson prose. It coordinates the workflow by dynamically delegating tasks to specialized subagents:
+> **ORCHESTRATOR ROLE & STRICT SEPARATION OF SUBAGENTS**:
+> The orchestrator does NOT write lesson content or edit lesson prose. It coordinates the workflow by dynamically delegating tasks to specialized subagents.
+>
+> **MANDATORY ENFORCEMENT: USE A DIFFERENT SUBAGENT FOR CREATING AND VALIDATING**:
+> - **Creator Subagent (Subagent 1)** authors the lesson files to disk.
+> - **Validator Subagent (Subagent 2)** MUST be an entirely **separate, freshly invoked subagent instance** with a clean context.
+> - **STRICTLY FORBIDDEN TO REUSE**: NEVER send the validation task to the same subagent that authored the lesson files. Reusing the creator subagent causes severe confirmation bias ("grading its own homework") and blinds the agent to its own hallucinations or syntax errors.
+> - **NEVER COMBINE**: Never combine lesson creation and validation into a single subagent prompt, single turn, or single subagent conversation.
+> - **NO ORCHESTRATOR INLINE AUTHORING**: Never write or audit lesson files directly in the orchestrator.
 
-1. **Delegate Lesson Content Creation (Subagent 1)**:
+1. **Delegate Lesson Content Creation (Subagent 1 - Independent Creator)**:
    - **For Software / Code Topics**: Invoke a subagent (`invoke_subagent`) using **`notes-create-coding-lessons`** (runnable code snippets, after-code translations, dev-to-dev stance).
    - **For Practical Craft / Non-Code Topics** (e.g. baking, concrete molding, perfumery, cooking, carpentry): Invoke a subagent (`invoke_subagent`) using **`notes-create-general-lessons`** (action protocols, sensory checks, broken-case recoveries, artisan-to-apprentice stance).
    - The subagent authors all sequenced lesson files (`01-...md` to `0n-...md`) inside the module directory.
    - **Mandatory Rule for Lesson 01**: Lesson 01 MUST always be the background onboarding lesson that gently eases the student in. It explains what existed before (status quo), why it broke down (pain points), and why this technology or craft was created (the "Why") before introducing any complex syntax or low-level mechanics.
-2. **Delegate Technical / Craft Validation (Subagent 2)**:
-   - **For Software / Code Topics**: Invoke a single dedicated technical auditor subagent (`invoke_subagent`) using **`notes-validate-coding-lessons`** (checks code syntax, API versions, RFC specs, and runtime mechanics).
-   - **For Practical Craft / Non-Code Topics**: Invoke a single dedicated craft auditor subagent (`invoke_subagent`) using **`notes-validate-general-lessons`** (checks factual truth of claims, scientific mechanisms, craft realism, and safety without micromanaging numbers).
-   - The auditor auto-patches any technical or factual bugs in the lesson files and reports status.
+2. **Delegate Technical / Craft Validation (Subagent 2 - Strictly Different Subagent)**:
+   - Once Subagent 1 finishes, invoke a **completely new, separate subagent** (`invoke_subagent`).
+   - **For Software / Code Topics**: Invoke the dedicated technical auditor subagent (`invoke_subagent`) using **`notes-validate-coding-lessons`** (checks code syntax, API versions, RFC specs, and runtime mechanics).
+   - **For Practical Craft / Non-Code Topics**: Invoke the dedicated craft auditor subagent (`invoke_subagent`) using **`notes-validate-general-lessons`** (checks factual truth of claims, scientific mechanisms, craft realism, and safety without micromanaging numbers).
+   - The auditor independently inspects the files on disk, auto-patches any technical or factual bugs, and reports status.
    - The orchestrator stays hands-off regarding deep content editing.
 3. **Notify User**:
    - Once creation and technical audit complete, inform the user in the terminal that the module is ready to begin at Lesson 01.

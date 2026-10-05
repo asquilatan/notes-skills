@@ -15,6 +15,11 @@ Use this skill to audit and fact-check lesson files within non-code and practica
 > This skill validates **only the target module** (e.g., `./01-module/`) inside the user's **active project workspace (Current Working Directory)**.
 > **NEVER** inspect or edit files inside `~/.agents/` or `~/.gemini/`.
 
+> [!IMPORTANT]
+> **MANDATORY DISTINCT SUBAGENT ENFORCEMENT**:
+> The craft/fact auditor MUST be a **completely different, freshly invoked subagent instance** from the subagent that authored the lessons.
+> **NEVER** reuse the creator subagent to audit its own lessons. An independent subagent guarantees unbiased fact-checking, realistic physics verification, and safety auditing.
+
 ---
 
 ## 1. Craft Fact-Checking Workflow
