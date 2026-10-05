@@ -77,8 +77,8 @@ for ($i = 0; $i -lt $lines.Length; $i++) {
         $currentQ = "- **" + $matches[1] + "**"
         $totalCount++
     }
-    # Correct answer line from quiz
-    elseif ($line -match '^-\s*\*\*Correct Answer\*\*:\s*(.+)$') {
+    # Correct answer line from quiz (supports optional blockquote >)
+    elseif ($line -match '^>?\s*-\s*\*\*Correct Answer\*\*:\s*(.+)$') {
         $currentAns = $matches[1].Trim()
     }
     # Answer from Q&A bold opening sentence

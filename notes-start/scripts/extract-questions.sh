@@ -51,8 +51,8 @@ awk '
         ans = ""
         next
     }
-    /^-[[:space:]]*\*\*Correct Answer\*\*:[[:space:]]*/ {
-        sub(/^-[[:space:]]*\*\*Correct Answer\*\*:[[:space:]]*/, "")
+    /^>?[[:space:]]*-[[:space:]]*\*\*Correct Answer\*\*:[[:space:]]*/ {
+        sub(/^>?[[:space:]]*-[[:space:]]*\*\*Correct Answer\*\*:[[:space:]]*/, "")
         ans = $0
         next
     }

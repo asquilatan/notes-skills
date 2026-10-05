@@ -100,7 +100,7 @@ Once the grill finishes:
    - **Phase 2 (Q5 to Q8)**: Corroboration & boundary verification to eliminate lucky guesses and confirm stable baseline.
    - **Crucial Rule**: Every diagnostic question **MUST include Option 4 (Option D) as `"I'm not sure"`**, with Options A, B, and C strictly balanced in length and plausibility.
    - Deliver into root `notes/questions.md` via the learner's chosen mode (Built-in Tool or `- [ ]` Checkboxes).
-4. Record all questions, user answers, and correct explanations directly in `notes/questions.md`.
+4. Record all questions, user answers, and correct explanations directly in `notes/questions.md`, formatting evaluations with markdown blockquotes (`> `).
 5. Record the verified frontier in `notes/agent_notes.md` and designate it as the starting module for the course.
 
 ---
@@ -140,7 +140,7 @@ When initiating a module:
 3. Invoke `notes-conduct-quiz` to run the **Module Diagnostic Quiz** (adaptive binary search within module scope):
    - **Crucial Rule**: Every diagnostic question **MUST include Option 4 (Option D) as `"I'm not sure"`**.
    - Written to `01-.../questions.md` and delivered via chosen mode (Built-in Tool or Checkbox).
-4. Evaluate user answers, log results in `questions.md`, and record baseline observations in root `agent_notes.md`.
+4. Evaluate user answers, log results in `questions.md` using markdown blockquotes (`> `), and record baseline observations in root `agent_notes.md`.
 5. Invoke `notes-create-outline` to generate `01-.../overview.md` containing:
    - Module objective summary.
    - Lesson Mermaid dependency graph (`L01["Title Case Phrase (Current)"]:::current --> L02["Title Case Phrase"]:::pending`).
@@ -182,7 +182,7 @@ For each lesson in the module:
    - If user prefers **Built-in Question Tool**: deliver via `ask_question` in chunks of 3–5.
    - If user prefers **Markdown Checkboxes**: format with `- [ ]` checkboxes in `questions.md`, prompt student to mark `[x]` and reply 'done', then evaluate with `view_file`.
 5. **The Hydra 100% Mastery Loop**:
-   - Grade answers and update `questions.md` with results and explanations.
+   - Grade answers and deliver evaluations in chat and `questions.md` using markdown blockquotes (`> `) for indented, separated, colored feedback.
    - If score is 100%: Mark as passed and advance `overview.md` (`:::done` on finished lesson, `:::current` on next).
    - If any question is missed:
      - **Log struggle**: Immediately record the diagnosed misconception in root `agent_notes.md` under `## Learner Observations & Struggle Points`.

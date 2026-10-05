@@ -88,7 +88,13 @@ Quizzes can be delivered in one of two modes based on the learner preference set
 ### Mode A: Built-in Question Tool (`ask_question`)
 1. **Write Questions to `questions.md`**: Format questions with full syntax-highlighted codeblocks and clear options.
 2. **Deliver via `ask_question`**: Prompt questions in chunks of 3–5 using the built-in question tool so the user selects their choices.
-3. **Instant Evaluation**: Grade user answers, record results (`[CORRECT]` / `[INCORRECT]`) and explanations directly in `questions.md`.
+3. **Instant Evaluation**: Grade user answers, record results (`[CORRECT]` / `[INCORRECT]`), and append explanations directly in `questions.md` and in chat using markdown blockquotes (`> `) for indented, colored separation:
+   ```markdown
+   > **Evaluation**: `[CORRECT]` (or `[INCORRECT]`)
+   > - **Your Answer**: B
+   > - **Correct Answer**: B) [Correct Option Text]
+   > - **Explanation**: [Clear conceptual explanation of why this option is correct and why other choices fail.]
+   ```
 
 ### Mode B: Markdown Checkbox Mode (`- [ ]` in `questions.md`) (Token-Efficient)
 *Why use this mode?* Eliminates token-heavy tool call payloads. The agent never duplicates questions inside `ask_question` tool arguments. Everything stays in the markdown file:
@@ -119,7 +125,13 @@ Quizzes can be delivered in one of two modes based on the learner preference set
    Tell the student in the terminal/chat:
    *"I've written the quiz into [questions.md](file:///path/to/questions.md). Please open the file, mark your answers with `[x]` (e.g. `- [x] B)`), save the file, and reply 'done' or 'ready'."*
 3. **Read & Evaluate**:
-   Once the student replies, read `questions.md` using `view_file`. Detect the checked options (`- [x]`), evaluate correctness, and append the results and explanations directly under each question in `questions.md`.
+   Once the student replies, read `questions.md` using `view_file`. Detect the checked options (`- [x]`), evaluate correctness, and append the results and explanations directly under each question in `questions.md` (and in chat) using markdown blockquotes (`> `) for indented, colored separation:
+   ```markdown
+   > **Evaluation**: `[CORRECT]` (or `[INCORRECT]`)
+   > - **Your Answer**: B
+   > - **Correct Answer**: B) [Correct Option Text]
+   > - **Explanation**: [Clear conceptual explanation of why this option is correct and why other choices fail.]
+   ```
 
 ---
 
@@ -191,4 +203,7 @@ flowchart TD
      - *Code/Snippet*: If applicable, format cleanly above the question prompt.
      - *Prompt*: Crisp, direct interrogative sentence.
      - *Options*: Formatted cleanly as `- A) ...`, `- B) ...`, etc.
+4. **Evaluation Formatting Rule (Mandatory Blockquotes `> `)**:
+   - Always format evaluation feedback (in terminal/chat turns and within `questions.md`) using markdown blockquotes (`> `).
+   - This indents the feedback, separates it visually from the question stem and code snippets, and renders it in a distinct, accented theme color for high legibility.
 
