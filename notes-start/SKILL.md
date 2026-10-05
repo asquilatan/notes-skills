@@ -51,7 +51,7 @@ flowchart TD
     V2 --> J
     J --> K["11. Lesson Quiz in questions.md -> Delivered via Built-in Tool or [ ] Checkboxes"]
     K --> L{"Passed Lesson Quiz (100%)?"}
-    L -- No --> M["Hydra Drills in questions.md & Log Struggle in agent_notes.md"]
+    L -- No --> M["Remediation Drills in questions.md & Log Struggle in agent_notes.md"]
     M --> J
     L -- Yes --> N["Advance overview.md Position"]
     N --> O{"More Lessons in Module?"}
@@ -177,7 +177,7 @@ When initiating a module:
 
 ---
 
-### Step 6: Interactive Lesson Study, `questions.md`, & Hydra Quizzing
+### Step 6: Interactive Lesson Study, `questions.md`, & Remediation Quizzing
 For each lesson in the module:
 1. **User Study**: The user reads the active lesson (e.g., `01-what-is-laravel.md`).
 2. **Mid-Lesson Q&A**: If the student asks any ad-hoc question or clarification, invoke `notes-ask`.
@@ -189,12 +189,12 @@ For each lesson in the module:
    - Invoke `notes-conduct-quiz` to format a **6–10 question check-in quiz** into **`questions.md`** with **mandatory uniform 25% distribution** across all four options (A: ~25%, B: ~25%, C: ~25%, D: ~25%; strictly zero Option A bias or clustering).
    - If user prefers **Built-in Question Tool**: deliver via `ask_question` in chunks of 3–5.
    - If user prefers **Markdown Checkboxes**: format with `- [ ]` checkboxes in `questions.md`, prompt student to mark `[x]` and reply 'done', then evaluate with `view_file`.
-5. **The Hydra 100% Mastery Loop**:
+5. **The 100% Mastery Remediation Loop**:
    - Grade answers and deliver evaluations in chat and `questions.md` using markdown blockquotes (`> `) for indented, separated, colored feedback.
    - If score is 100%: Mark as passed and advance `overview.md` (`:::done` on finished lesson, `:::current` on next).
    - If any question is missed:
      - **Log struggle**: Immediately record the diagnosed misconception in root `agent_notes.md` under `## Learner Observations & Struggle Points`.
-     - **Activate Hydra**: For every 1 wrong answer, spawn **2 new targeted drill questions** into `questions.md` and deliver via the preferred mode (maintaining balanced answer distribution). Quizzing repeats until 100% mastery is achieved.
+     - **Activate Remediation**: For every 1 wrong answer, spawn **2 new targeted drill questions** into `questions.md` and deliver via the preferred mode (maintaining balanced answer distribution). Quizzing repeats until 100% mastery is achieved.
 
 ---
 

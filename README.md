@@ -77,4 +77,4 @@ Teach me [topic]
 2. **Diagnostic Quiz**: It runs a quick adaptive diagnostic to determine your baseline knowledge frontier.
 3. **Curriculum Outline**: It generates `overview.md` with a true DAG dependency graph and sets up module directories (`overview.md` + `questions.md`; no module `notes.md`).
 4. **Lesson Generation & Validation**: The orchestrator delegates drafting to a dedicated creator subagent, and strictly invokes a **completely separate subagent** to independently audit and validate the lessons before logging verification status to `agent_notes.md`.
-5. **Check-ins & Progression**: You read each lesson and take check-ins via your preferred mode (built-in question tool or checking `- [x]` in `questions.md`). Any missed questions activate Hydra drills and log struggle points in `agent_notes.md` to ensure mastery before advancing.
+5. **Check-ins & Progression**: You read each lesson and take check-ins via your preferred mode (built-in question tool or checking `- [x]` in `questions.md`). Any missed questions activate remediation drills and log struggle points in `agent_notes.md` to ensure mastery before advancing.

@@ -27,7 +27,7 @@ Quizzes are delivered using the learner's preferred mode recorded in root `agent
 | **Course Diagnostic** | Root `notes/questions.md` | Calibrates starting point across the whole course roadmap before outlining. | **Adaptive Binary Search with Confirmation (6–8 Questions)**: Starts at moderate difficulty. If correct -> harder/later topic; if wrong / "not sure" -> earlier topic. Confirms frontier to eliminate lucky guesses. | Written to root `questions.md`. Delivered via chosen format (Built-in Tool or Checkbox). Frontier logged to `agent_notes.md`. |
 | **Module Diagnostic** | `NN-module/questions.md` | Calibrates baseline familiarity within the specific module before lesson authoring. | **Adaptive Binary Search with Confirmation (6–8 Questions)**: Probes prerequisites and core module concepts, confirming baseline with 6–8 total questions. | Written to module `questions.md`. Delivered via chosen format. Baseline logged to `agent_notes.md`. |
 | **Post-Lesson Check-in** | `NN-module/questions.md` | Validates understanding of a single lesson when the user signals "ready". | **6–10 Questions**: Includes dedicated application codeblocks, tradeoff analysis, and common bugs. | Written to `questions.md` with syntax-highlighted codeblocks. Delivered via chosen format. |
-| **Hydra Remediation Drill** | `NN-module/questions.md` | Triggered if any check-in question is missed. Enforces **100% mastery**. | **2 new targeted drill questions per missed item**. | Appended to `questions.md`. Delivered via chosen format until 100%. Struggles logged to `agent_notes.md`. |
+| **Targeted Remediation Drill** | `NN-module/questions.md` | Triggered if any check-in question is missed. Enforces **100% mastery**. | **2 new targeted drill questions per missed item**. | Appended to `questions.md`. Delivered via chosen format until 100%. Struggles logged to `agent_notes.md`. |
 | **Module Re-quiz** | `NN-module/questions.md` | Comprehensive retention and synthesis test across all lessons in the module. | **~20 Fresh Questions**: Brand new scenarios testing integration across the entire module. | Written to `questions.md` & delivered in chunks (Built-in Tool or Checkbox). |
 | **Course Major Quiz** | Root `notes/questions.md` | Comprehensive capstone evaluation covering all modules in the course. | **35–65 Questions** (Scaled to size: ~35 for 5-lesson courses, up to ~65 for 15+ lesson courses). Fresh real-world problems. | Written to root `questions.md` & chunked via chosen format. Final mastery summary logged to `agent_notes.md`. |
 
@@ -139,12 +139,12 @@ Quizzes can be delivered in one of two modes based on the learner preference set
 
 ---
 
-### C. The Hydra 100% Mastery Protocol & Struggle Tracking
+### C. The 100% Mastery Remediation Protocol & Struggle Tracking
 
 > [!CAUTION]
 > **100% MASTERY REQUIRED TO ADVANCE**:
 > A lesson check-in is ONLY passed when the student achieves **100% accuracy**.
-> If any question is missed, the **Hydra Rule** activates:
+> If any question is missed, the **Remediation Protocol** activates:
 > For **every 1 missed question**, spawn **2 new targeted drill questions** on that specific misconception or topic!
 
 ```mermaid
@@ -153,8 +153,8 @@ flowchart TD
     Grade --> Check{"All Correct (100%)?"}
     Check -- Yes --> Pass["[PASSED - 100% MASTERY]<br/>Advance overview.md Position"]
     Check -- No --> LogStruggle["Log Struggle & Misconception in Root agent_notes.md"]
-    LogStruggle --> Hydra["Hydra Activated!<br/>Spawn 2 New Targeted Drill Questions per Missed Item"]
-    Hydra --> Append["Append Drill Questions to questions.md"]
+    LogStruggle --> Remediation["Remediation Activated!<br/>Spawn 2 New Targeted Drill Questions per Missed Item"]
+    Remediation --> Append["Append Drill Questions to questions.md"]
     Append --> Reprompt["Prompt Drills (via ask_question or [ ] Checkboxes)"]
     Reprompt --> Submit
 ```
@@ -163,9 +163,9 @@ flowchart TD
 2. **Log Struggle in Root `agent_notes.md` (Context-Less Handoff)**:
    Immediately append an entry into the root `agent_notes.md` under `## Learner Observations & Struggle Points`:
    ```markdown
-   - **[Module NN / Lesson NN]**: Struggled with [Concept/Topic Name], specifically [Diagnosed misconception]. Hydra drill triggered.
+   - **[Module NN / Lesson NN]**: Struggled with [Concept/Topic Name], specifically [Diagnosed misconception]. Remediation drill triggered.
    ```
-   *(When the user eventually passes the drill, update the note to indicate resolution: "...Resolved after Hydra drill.")*
+   *(When the user eventually passes the drill, update the note to indicate resolution: "...Resolved after remediation drill.")*
 3. **Spawn 2 Drill Questions per Missed Item**:
    - If 1 question missed: generate 2 fresh drill questions.
    - If 2 questions missed: generate 4 fresh drill questions.
@@ -173,19 +173,19 @@ flowchart TD
    - If in Markdown Checkbox Mode: write options with `- [ ]`.
    - If in Built-in Tool Mode: write options and prompt via `ask_question`.
    ```markdown
-   #### Hydra Remediation Drill: [Topic / Misconception Name]
+   #### Targeted Remediation Drill: [Topic / Misconception Name]
    *(2 targeted questions spawned to achieve 100% mastery)*
 
-   ##### H1: [Targeted Drill Question 1]
+   ##### R1: [Targeted Drill Question 1]
    - [ ] A) ...
    - [ ] B) ...
    - [ ] C) ...
    - [ ] D) ...
 
-   ##### H2: [Targeted Drill Question 2 with Code Block]
+   ##### R2: [Targeted Drill Question 2 with Code Block]
    ...
    ```
-5. **Repeat Until 100%**: Continue until all hydra drill questions are answered correctly. Advance only upon 100% score.
+5. **Repeat Until 100%**: Continue until all remediation drill questions are answered correctly. Advance only upon 100% score.
 
 ---
 

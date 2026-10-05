@@ -18,7 +18,7 @@ Use this skill to establish the structure, dependency graphs, and tracking files
 Every learning workspace consists of:
 1. `agent_notes.md` (Root Level Only): Contains user preferences, pedagogical settings, the calibrated knowledge frontier, and dynamic learner struggle points and observations. Designed for context-less transfer across different AI agents.
 2. `overview.md` (Root & Module Levels): The roadmap containing a high-level summary, a Mermaid dependency graph showing progression and current position, and a numbered breakdown.
-3. `questions.md` (Module Level & Root Level): All assessments (diagnostic, check-ins, Hydra drills, re-quizzes) and mid-lesson Q&As.
+3. `questions.md` (Module Level & Root Level): All assessments (diagnostic, check-ins, remediation drills, re-quizzes) and mid-lesson Q&As.
 
 > [!IMPORTANT]
 > **NO `notes.md` IN MODULES (CRITICAL RULE)**:
@@ -86,7 +86,7 @@ notes/
 > [!IMPORTANT]
 > **CONTEXT-LESS AGENT HANDOFF**:
 > `agent_notes.md` is specifically engineered so that **any new AI agent** brought into the workspace can immediately understand the user's exact preferences, settings, and learning state without needing prior conversation history.
-> The agent logs observations here whenever the user struggles with a topic or triggers Hydra remediation drills.
+> The agent logs observations here whenever the user struggles with a topic or triggers targeted remediation drills.
 
 ```markdown
 # Agent Notes: [Topic / Course Name]
@@ -106,8 +106,8 @@ notes/
 - **Starting Module**: [Calibrated starting module, e.g. 01-primitives-and-foundations/]
 
 ## Learner Observations & Struggle Points
-*(Dynamic observation log updated whenever the learner misses questions, triggers Hydra drills, or encounters friction)*
-- **[Timestamp or Module NN]**: [Specific struggle or misconception observed, e.g., "Struggles with framing layer byte offsets; misidentified masking key position. Resolved via Hydra drill H1-H2."]
+*(Dynamic observation log updated whenever the learner misses questions, triggers remediation drills, or encounters friction)*
+- **[Timestamp or Module NN]**: [Specific struggle or misconception observed, e.g., "Struggles with framing layer byte offsets; misidentified masking key position. Resolved via remediation drill R1-R2."]
 
 ## Module Progress Log
 - **01-[module-name]**: [Status: In Progress / Passed. Audit notes: Verified by Technical Auditor.]
@@ -160,14 +160,14 @@ When creating a specific module folder (e.g. `01-module-name/`):
 ```
 01-module-name/
   overview.md       # Module roadmap, lesson DAG dependency graph, lesson descriptions
-  questions.md      # All Q&A and quizzes: Student doubts, check-ins with codeblocks, Hydra drills, and re-quizzes
+  questions.md      # All Q&A and quizzes: Student doubts, check-ins with codeblocks, remediation drills, and re-quizzes
   01-concise-slug.md
   02-concise-slug.md
   ...
 ```
 
 > [!NOTE]
-> There is **NO `notes.md` file in the module folder**. All quiz items, Hydra drills, and student Q&A belong in `questions.md`. All preferences, settings, and learner observations are logged in the root `agent_notes.md`.
+> There is **NO `notes.md` file in the module folder**. All quiz items, remediation drills, and student Q&A belong in `questions.md`. All preferences, settings, and learner observations are logged in the root `agent_notes.md`.
 
 ### Module `overview.md` Template (Branching Lesson DAG)
 ```markdown
