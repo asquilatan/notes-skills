@@ -46,18 +46,15 @@ flowchart TD
 
 1. **Locate Target Files**:
    Scan all `.md` lesson files under the target module directory:
-   `<module-dir>/01-*.md`, `<module-dir>/02-*.md`, etc. (excluding `notes.md` and `overview.md`).
+   `<module-dir>/01-*.md`, `<module-dir>/02-*.md`, etc. (excluding `overview.md` and `questions.md`).
 2. **Invoke Craft Audit**:
    Launch the `Module Craft Fact Auditor` subagent to review the lesson files against the checklist above.
 3. **Resolve Factual Inaccuracies**:
    If the auditor identifies inaccurate facts, unscientific claims, or missing safety warnings, auto-patch the affected lesson files immediately.
 4. **Log Validation Summary**:
-   Append a concise verification note into the module's `notes.md`:
+   Append a concise verification note into the root `agent_notes.md` under `## Module Progress Log`:
    ```markdown
-   #### Validation Status: Craft & Factual Content Verified
-   - **Auditor**: Module Craft Fact Auditor
-   - **Verification**: Real-world craft facts, physical/chemical mechanisms, and safety precautions validated.
-   - **Status**: Ready for Lesson 01
+   - **[NN-module-name]**: Validated by Module Craft Fact Auditor (real-world craft facts, mechanisms, and safety precautions confirmed). Ready for Lesson 01.
    ```
 5. **Notify Orchestrator**:
    Signal to the orchestrator that validation is complete so the student can begin Lesson 01.

@@ -45,18 +45,15 @@ flowchart TD
 
 1. **Locate Target Files**:
    Scan all `.md` lesson files under the target module directory:
-   `<module-dir>/01-*.md`, `<module-dir>/02-*.md`, etc. (excluding `notes.md` and `overview.md`).
+   `<module-dir>/01-*.md`, `<module-dir>/02-*.md`, etc. (excluding `overview.md` and `questions.md`).
 2. **Invoke Technical Audit**:
    Launch the `Module Technical Auditor` subagent to review the lesson files against the checklist above.
 3. **Resolve Technical Inaccuracies**:
    If the auditor identifies broken code, inaccurate claims, or outdated APIs, auto-patch the affected lesson files immediately.
 4. **Log Validation Summary**:
-   Append a concise verification note into the module's `notes.md`:
+   Append a concise verification note into the root `agent_notes.md` under `## Module Progress Log`:
    ```markdown
-   #### Validation Status: Technical Content Verified
-   - **Auditor**: Module Technical Auditor
-   - **Verification**: Code snippets, APIs, and protocol specs validated against official standards.
-   - **Status**: Ready for Lesson 01
+   - **[NN-module-name]**: Validated by Module Technical Auditor (code snippets, APIs, and protocol specs confirmed). Ready for Lesson 01.
    ```
 5. **Notify Orchestrator**:
    Signal to the orchestrator that technical validation is complete so the student can be invited to begin Lesson 01.
