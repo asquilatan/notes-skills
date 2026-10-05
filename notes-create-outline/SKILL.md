@@ -1,6 +1,6 @@
 ---
 name: notes-create-outline
-description: "Creates and updates course-level and module-level outlines (notes.md and overview.md). Generates Mermaid dependency graphs with visual progress nodes, concise summaries, numbered module/lesson lists with descriptive phrases, and tracks current learning position."
+description: "Creates and updates course-level agent_notes.md and overview.md roadmaps. Generates Mermaid dependency graphs with visual progress nodes, stores learning preferences and struggle observations for context-less transfer, and tracks current position."
 license: MIT
 metadata:
   author: user
@@ -15,9 +15,14 @@ Use this skill to establish the structure, dependency graphs, and tracking files
 > All course and module directories (e.g., `./notes/`, `./01-module-name/`) MUST be created inside the user's **active project workspace (Current Working Directory)**.
 > **NEVER** create folders or files inside `~/.agents/`, `~/.gemini/`, or inside the skill's own installation directory.
 
-Every learning unit requires two sibling files:
-1. `notes.md`: Contains curated executive summaries, technical references, and conceptual synthesis (per-lesson check-ins, student doubts, and Hydra drills are stored directly in `questions.md`).
-2. `overview.md`: The roadmap containing a high-level summary, a Mermaid dependency graph showing progression and current position, and a numbered breakdown.
+Every learning workspace consists of:
+1. `agent_notes.md` (Root Level Only): Contains user preferences, pedagogical settings, the calibrated knowledge frontier, and dynamic learner struggle points and observations. Designed for context-less transfer across different AI agents.
+2. `overview.md` (Root & Module Levels): The roadmap containing a high-level summary, a Mermaid dependency graph showing progression and current position, and a numbered breakdown.
+3. `questions.md` (Module Level & Root Level): All assessments (diagnostic, check-ins, Hydra drills, re-quizzes) and mid-lesson Q&As.
+
+> [!IMPORTANT]
+> **NO `notes.md` IN MODULES (CRITICAL RULE)**:
+> Modules do NOT contain a `notes.md` file. All student assessments, check-ins, and Q&As live in `questions.md`. All learning preferences, curriculum settings, and struggle observations are centralized in the top-level `agent_notes.md`.
 
 ---
 
@@ -64,15 +69,48 @@ After the diagnostic test pinpoints the student's frontier, the curriculum lengt
 
 ---
 
-## 4. Course-Level Outline
+## 4. Course-Level Files (`agent_notes.md` & `overview.md`)
 
 When creating the root course structure (e.g. in `notes/` or `<output-dir>/`):
 
 ### Directory Layout
 ```
 notes/
-  notes.md          # Course-level technical notes, root architecture, reflections log
+  agent_notes.md    # User preferences, course settings, knowledge frontier, learner struggle tracker
   overview.md       # Course summary, true DAG module dependency graph, module descriptions
+  questions.md      # Course-level diagnostic test and final capstone major quiz
+```
+
+### Top-Level `agent_notes.md` Template (Context-Less Transfer)
+
+> [!IMPORTANT]
+> **CONTEXT-LESS AGENT HANDOFF**:
+> `agent_notes.md` is specifically engineered so that **any new AI agent** brought into the workspace can immediately understand the user's exact preferences, settings, and learning state without needing prior conversation history.
+> The agent logs observations here whenever the user struggles with a topic or triggers Hydra remediation drills.
+
+```markdown
+# Agent Notes: [Topic / Course Name]
+
+## Learning Preferences & Settings
+- **Topic & Concrete Outcome**: [What the user wants to learn and build/achieve]
+- **Target Scope & Depth**: [Vertical Deep Dive vs. Horizontal Breadth Survey]
+- **Course Length Tier**: [Short (1–3 modules) / Average (4–8 modules) / Long (9+ modules)]
+- **Topic Domain**: [Software/Code vs. Practical Craft / Non-Code]
+- **Learning Style**: [Project-based vs. Concept-only vs. Mixed]
+- **Source Authority**: [Provided Syllabus/PPT vs. Generated from Scratch]
+- **Question Delivery Mode**: [Interactive UI Modal (`ask_question`) / Markdown Checkbox (`- [ ]` in `questions.md`)]
+- **User Pacing / Notes**: [Any additional nuances or preferences captured during grilling]
+
+## Baseline Knowledge Frontier
+- **Diagnostic Result**: [Summary of Phase 1 & 2 diagnostic score, confirmed boundary]
+- **Starting Module**: [Calibrated starting module, e.g. 01-primitives-and-foundations/]
+
+## Learner Observations & Struggle Points
+*(Dynamic observation log updated whenever the learner misses questions, triggers Hydra drills, or encounters friction)*
+- **[Timestamp or Module NN]**: [Specific struggle or misconception observed, e.g., "Struggles with framing layer byte offsets; misidentified masking key position. Resolved via Hydra drill H1-H2."]
+
+## Module Progress Log
+- **01-[module-name]**: [Status: In Progress / Passed. Audit notes: Verified by Technical Auditor.]
 ```
 
 ### Course `overview.md` Template (True Branching DAG)
@@ -114,7 +152,7 @@ graph TD
 
 ---
 
-## 5. Module-Level Outline
+## 5. Module-Level Layout (No Module `notes.md`)
 
 When creating a specific module folder (e.g. `01-module-name/`):
 
@@ -122,41 +160,14 @@ When creating a specific module folder (e.g. `01-module-name/`):
 ```
 01-module-name/
   overview.md       # Module roadmap, lesson DAG dependency graph, lesson descriptions
-  notes.md          # Curated module synthesis: Why -> Topic -> Diagram -> Summary (ZERO quiz clutter)
   questions.md      # All Q&A and quizzes: Student doubts, check-ins with codeblocks, Hydra drills, and re-quizzes
   01-descriptive-phrase-topic.md
   02-descriptive-phrase-topic.md
   ...
 ```
 
-### Module `notes.md` Template (Curated Synthesis)
-
-> [!IMPORTANT]
-> **ZERO QUIZ CLUTTER IN `notes.md`**:
-> `notes.md` contains NO quiz questions or test results. All assessments live in `questions.md`.
-> `notes.md` is strictly the **Curated Executive Summary / Technical Reference** for the module, structured as:
-> `Why` -> `Topic` -> `Diagram (if needed)` -> `Summary` -> `Topic` -> `Diagram (if needed)` -> `Summary`...
-
-```markdown
-# Module [NN]: [Module Name] - Technical Notes
-
-## Why [Topic/Technology] Exists
-[Continuous explanation of the fundamental problem space, what traditional systems lacked, why workarounds failed, and why this technology or craft was created.]
-
-## [First Major Topic Title]
-```mermaid
-[Mermaid sequence/flowchart/architecture diagram if visual flow aids understanding]
-```
-[Concise, continuous summary paragraph(s) explaining the mechanism, moving parts, and engineering impact.]
-
-## [Second Major Topic Title]
-```mermaid
-[Mermaid diagram if needed]
-```
-[Concise summary paragraph(s) explaining the topic.]
-
-*(Continues iteratively for all core topics in the module)*
-```
+> [!NOTE]
+> There is **NO `notes.md` file in the module folder**. All quiz items, Hydra drills, and student Q&A belong in `questions.md`. All preferences, settings, and learner observations are logged in the root `agent_notes.md`.
 
 ### Module `overview.md` Template (Branching Lesson DAG)
 ```markdown

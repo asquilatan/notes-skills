@@ -1,6 +1,6 @@
 ---
 name: notes-conduct-quiz
-description: "Conducts diagnostic, post-lesson, module re-quiz, and course major quizzes. Implements adaptive binary-search diagnostics, prompts questions via the interactive ask_question terminal harness, records user answers and explanations in notes.md, and determines mastery."
+description: "Conducts diagnostic, post-lesson, module re-quiz, and course major quizzes. Implements adaptive binary-search diagnostics, supports dual delivery modes (clickable UI modal vs token-saving Markdown checkboxes in questions.md), and logs learner struggle points to root agent_notes.md."
 license: MIT
 metadata:
   author: user
@@ -8,25 +8,28 @@ metadata:
 
 # Notes Conduct Quiz
 
-Use this skill to conduct all learning assessments. Quizzes are written to the target `notes.md` file, delivered interactively in the terminal via the `ask_question` harness tool, and updated in `notes.md` with both the user's answers and detailed explanations.
+Use this skill to conduct all learning assessments. All quizzes are written to the target `questions.md` file (root or module level), delivered either via interactive UI modal (`ask_question`) or token-saving Markdown checkboxes (`- [ ]`), and learner struggle areas are actively logged to root `agent_notes.md` for context-less agent handoffs.
 
 > [!CAUTION]
 > **WORKSPACE PATH ENFORCEMENT (CRITICAL)**:
-> All `notes.md` and quiz files MUST be created and edited inside the user's **active project workspace (Current Working Directory)** (e.g., `./notes/` or `./01-.../`).
+> All `questions.md` and `agent_notes.md` files MUST be created and edited inside the user's **active project workspace (Current Working Directory)** (e.g., `./notes/` or `./01-.../`).
 > **NEVER** write or edit files inside `~/.agents/`, `~/.gemini/`, or inside the skill's own installation path.
+> **NEVER** write quiz items to module folders as `notes.md` (modules do not use `notes.md`).
 
 ---
 
 ## 1. The 5 Quiz Types & Sizing
 
-| Quiz Type | Location | Purpose & Trigger | Sizing & Strategy | Format & Harness |
+Quizzes are delivered using the learner's preferred mode recorded in root `agent_notes.md` (**Interactive UI Modal** or **Markdown Checkbox Mode**).
+
+| Quiz Type | Location | Purpose & Trigger | Sizing & Strategy | Delivery Format |
 | :--- | :--- | :--- | :--- | :--- |
-| **Course Diagnostic** | Root `notes/questions.md` | Calibrates starting point across the whole course roadmap before outlining. | **Adaptive Binary Search with Confirmation (6–8 Questions)**: Starts at moderate difficulty. If correct -> harder/later topic; if wrong / "not sure" -> earlier topic. Confirms frontier to eliminate lucky guesses. | Written to root `questions.md` & prompted via `ask_question` clickable modal. |
-| **Module Diagnostic** | `NN-module/questions.md` | Calibrates baseline familiarity within the specific module before lesson authoring. | **Adaptive Binary Search with Confirmation (6–8 Questions)**: Probes prerequisites and core module concepts, confirming baseline with 6–8 total questions. | Written to module `questions.md` & prompted via `ask_question` clickable modal. |
-| **Post-Lesson Check-in** | `NN-module/questions.md` | Validates understanding of a single lesson when the user signals "ready". | **6–10 Questions**: Includes dedicated application codeblocks, tradeoff analysis, and common bugs. | Written to `questions.md` with syntax-highlighted codeblocks, simultaneously prompted via `ask_question` clickable modal. |
-| **Hydra Remediation Drill** | `NN-module/questions.md` | Triggered if any check-in question is missed. Enforces **100% mastery**. | **2 new targeted drill questions per missed item**. | Appended to `questions.md` and prompted via `ask_question` until 100% is achieved. |
-| **Module Re-quiz** | `NN-module/questions.md` | Comprehensive retention and synthesis test across all lessons in the module. | **~20 Fresh Questions**: Brand new scenarios testing integration across the entire module. | Written to `questions.md` & delivered in chunks via `ask_question`. |
-| **Course Major Quiz** | Root `notes/questions.md` | Comprehensive capstone evaluation covering all modules in the course. | **35–65 Questions** (Scaled to size: ~35 for 5-lesson courses, up to ~65 for 15+ lesson courses). Fresh real-world problems. | Written to root `questions.md` & chunked via `ask_question`. |
+| **Course Diagnostic** | Root `notes/questions.md` | Calibrates starting point across the whole course roadmap before outlining. | **Adaptive Binary Search with Confirmation (6–8 Questions)**: Starts at moderate difficulty. If correct -> harder/later topic; if wrong / "not sure" -> earlier topic. Confirms frontier to eliminate lucky guesses. | Written to root `questions.md`. Delivered via chosen format (Modal or Checkbox). Frontier logged to `agent_notes.md`. |
+| **Module Diagnostic** | `NN-module/questions.md` | Calibrates baseline familiarity within the specific module before lesson authoring. | **Adaptive Binary Search with Confirmation (6–8 Questions)**: Probes prerequisites and core module concepts, confirming baseline with 6–8 total questions. | Written to module `questions.md`. Delivered via chosen format. Baseline logged to `agent_notes.md`. |
+| **Post-Lesson Check-in** | `NN-module/questions.md` | Validates understanding of a single lesson when the user signals "ready". | **6–10 Questions**: Includes dedicated application codeblocks, tradeoff analysis, and common bugs. | Written to `questions.md` with syntax-highlighted codeblocks. Delivered via chosen format. |
+| **Hydra Remediation Drill** | `NN-module/questions.md` | Triggered if any check-in question is missed. Enforces **100% mastery**. | **2 new targeted drill questions per missed item**. | Appended to `questions.md`. Delivered via chosen format until 100%. Struggles logged to `agent_notes.md`. |
+| **Module Re-quiz** | `NN-module/questions.md` | Comprehensive retention and synthesis test across all lessons in the module. | **~20 Fresh Questions**: Brand new scenarios testing integration across the entire module. | Written to `questions.md` & delivered in chunks (Modal or Checkbox). |
+| **Course Major Quiz** | Root `notes/questions.md` | Comprehensive capstone evaluation covering all modules in the course. | **35–65 Questions** (Scaled to size: ~35 for 5-lesson courses, up to ~65 for 15+ lesson courses). Fresh real-world problems. | Written to root `questions.md` & chunked via chosen format. Final mastery summary logged to `agent_notes.md`. |
 
 ---
 
@@ -76,52 +79,51 @@ flowchart TD
 
 ---
 
-## 3. Interactive Protocol: Rich `questions.md` + Clickable Harness
+---
 
-### Dual-Channel Interaction Model
+## 3. Question Delivery Modes: Interactive Modal vs. Markdown Checkboxes
 
-> [!IMPORTANT]
-> **SIMULTANEOUS RICH PREVIEW & CLICKABLE UI**:
-> 1. **Visual Markdown Preview (`questions.md`)**: The agent formats questions with syntax-highlighted codeblocks (e.g. Node.js snippets, curl commands, JSON packets) and diagrams so they render beautifully in VS Code's Markdown Preview pane.
-> 2. **Clickable Input Harness (`ask_question`)**: The agent triggers `ask_question` so the student can **click** Option A, B, C, or D using radio buttons in the UI modal without manual typing.
-> 3. **Instant Evaluation**: Upon submission, the agent grades the response and updates `questions.md` with results and explanations.
+Quizzes can be delivered in one of two modes based on the learner preference set during initial grilling and recorded in root `agent_notes.md`:
 
-### A. Post-Lesson Check-In Quizzes (6–10 Questions)
+### Mode A: Interactive UI Modal (`ask_question`)
+1. **Write Questions to `questions.md`**: Format questions with full syntax-highlighted codeblocks and clear options.
+2. **Deliver via `ask_question`**: Prompt questions in chunks of 3–5 using the clickable UI harness so the user clicks their choices.
+3. **Instant Evaluation**: Grade user answers, record results (`[CORRECT]` / `[INCORRECT]`) and explanations directly in `questions.md`.
 
-1. **Target File**: Locate or initialize `questions.md` in the active module directory (e.g. `01-module/questions.md`).
-2. **Format Rich Questions in `questions.md`**:
-   Include dedicated application codeblocks for relevant questions:
+### Mode B: Markdown Checkbox Mode (`- [ ]` in `questions.md`) (Token-Efficient)
+*Why use this mode?* Eliminates token-heavy tool call payloads. The agent never duplicates questions inside `ask_question` tool arguments. Everything stays in the markdown file:
+1. **Write Checkboxes to `questions.md`**:
    ````markdown
    ### Quiz: Lesson [NN] Check-in ([Lesson Title])
    *Conducted on: YYYY-MM-DD HH:mm*
 
    #### Q1: [Theory / Concept Question]
-   - A) [Option A]
-   - B) [Option B]
-   - C) [Option C]
-   - D) [Option D]
+   - [ ] A) [Option A]
+   - [ ] B) [Option B]
+   - [ ] C) [Option C]
+   - [ ] D) [Option D]
 
    #### Q2: [Application / Code Inspection]
-   Given the following implementation:
    ```javascript
    server.on('upgrade', (req, socket, head) => {
      // ...
    });
    ```
    What must the handler emit if `Sec-WebSocket-Version` is `8`?
-   - A) HTTP 400 Bad Request
-   - B) HTTP 426 Upgrade Required with Sec-WebSocket-Version: 13
-   - C) HTTP 101 Switching Protocols
-   - D) Emit socket 'error' and terminate immediately
+   - [ ] A) Emit HTTP 400 Bad Request indicating the client version is malformed
+   - [ ] B) Emit HTTP 426 Upgrade Required requesting Sec-WebSocket-Version 13
+   - [ ] C) Emit HTTP 101 Switching Protocols and negotiate a legacy handshake
+   - [ ] D) Emit socket 'error' and terminate the TCP connection immediately
    ````
-3. **Prompt via Clickable Modal (`ask_question`)**:
-   Prompt the questions in chunks of 3–5 so the student can simply click their choices.
-4. **Grade and Update `questions.md`**:
-   Append user answers, correct answers, results (`[CORRECT]` / `[INCORRECT]`), and concise technical explanations.
+2. **Prompt User in Chat**:
+   Tell the student in the terminal/chat:
+   *"I've written the quiz into [questions.md](file:///path/to/questions.md). Please open the file, mark your answers with `[x]` (e.g. `- [x] B)`), save the file, and reply 'done' or 'ready'."*
+3. **Read & Evaluate**:
+   Once the student replies, read `questions.md` using `view_file`. Detect the checked options (`- [x]`), evaluate correctness, and append the results and explanations directly under each question in `questions.md`.
 
 ---
 
-### B. The Hydra 100% Mastery Protocol
+### C. The Hydra 100% Mastery Protocol & Struggle Tracking
 
 > [!CAUTION]
 > **100% MASTERY REQUIRED TO ADVANCE**:
@@ -131,35 +133,43 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    Submit["User Submits Quiz via ask_question"] --> Grade["Grade Answers & Update questions.md"]
+    Submit["User Submits Quiz (Modal or [x] in questions.md)"] --> Grade["Grade Answers & Update questions.md"]
     Grade --> Check{"All Correct (100%)?"}
     Check -- Yes --> Pass["[PASSED - 100% MASTERY]<br/>Advance overview.md Position"]
-    Check -- No --> Hydra["Hydra Activated!<br/>Spawn 2 New Targeted Drill Questions per Missed Item"]
+    Check -- No --> LogStruggle["Log Struggle & Misconception in Root agent_notes.md"]
+    LogStruggle --> Hydra["Hydra Activated!<br/>Spawn 2 New Targeted Drill Questions per Missed Item"]
     Hydra --> Append["Append Drill Questions to questions.md"]
-    Append --> Reprompt["Prompt Drills via ask_question Clickable Modal"]
+    Append --> Reprompt["Prompt Drills (via ask_question or [ ] Checkboxes)"]
     Reprompt --> Submit
 ```
 
 1. **Identify Misconceptions**: For every incorrect answer, diagnose the exact conceptual flaw.
-2. **Spawn 2 Drill Questions per Missed Item**:
+2. **Log Struggle in Root `agent_notes.md` (Context-Less Handoff)**:
+   Immediately append an entry into the root `agent_notes.md` under `## Learner Observations & Struggle Points`:
+   ```markdown
+   - **[Module NN / Lesson NN]**: Struggled with [Concept/Topic Name], specifically [Diagnosed misconception]. Hydra drill triggered.
+   ```
+   *(When the user eventually passes the drill, update the note to indicate resolution: "...Resolved after Hydra drill.")*
+3. **Spawn 2 Drill Questions per Missed Item**:
    - If 1 question missed: generate 2 fresh drill questions.
    - If 2 questions missed: generate 4 fresh drill questions.
-3. **Append to `questions.md`**:
+4. **Append Drills to `questions.md`**:
+   - If in Markdown Checkbox Mode: write options with `- [ ]`.
+   - If in Modal Mode: write options and prompt via `ask_question`.
    ```markdown
    #### Hydra Remediation Drill: [Topic / Misconception Name]
    *(2 targeted questions spawned to achieve 100% mastery)*
 
    ##### H1: [Targeted Drill Question 1]
-   - A) ...
-   - B) ...
-   - C) ...
-   - D) ...
+   - [ ] A) ...
+   - [ ] B) ...
+   - [ ] C) ...
+   - [ ] D) ...
 
    ##### H2: [Targeted Drill Question 2 with Code Block]
    ...
    ```
-4. **Prompt via `ask_question`**: Deliver the drill questions interactively.
-5. **Repeat Until 100%**: Continue until all hydra drill questions are answered correctly.
+5. **Repeat Until 100%**: Continue until all hydra drill questions are answered correctly. Advance only upon 100% score.
 
 ---
 
@@ -171,3 +181,14 @@ flowchart TD
 2. **Chunking Large Quizzes**:
    - Chunk large quizzes via `ask_question` into manageable sets of 3–5 questions per turn so the student isn't overwhelmed.
    - Progressively write results to `questions.md` after each chunk.
+3. **Question Layout & Option Symmetry (Anti-Test-Wiseness Protocol)**:
+   - **Option Length Parity**: Keep all option choices (A, B, C, D) balanced in character and word count (within ~15–20% length variance). Never make the correct answer substantially longer or shorter than the distractors.
+   - **Avoid Artificially Lengthened Specificity**: Never overload the correct choice with defensive qualifiers, granular mechanics, or hyper-specific parentheticals while leaving distractors curt or superficial. If technical context is required, place the context in the question stem rather than bloating the correct option.
+   - **Plausible & Technically Credible Distractors**: Distractors must represent genuine real-world misconceptions, adjacent architectural patterns, or believable edge-case failures. Avoid caricature or obviously fabricated choices (e.g. "CSS styles cached in hardware GPU cache" or "browser C++ DOM tree crashed").
+   - **Syntactical & Grammatical Parallelism**: Ensure all options start with the same part of speech (e.g., all active verbs, all noun phrases, or all causal clauses) and share parallel grammatical structure.
+   - **Clean Layout**:
+     - *Context/Scenario*: Present background context clearly.
+     - *Code/Snippet*: If applicable, format cleanly above the question prompt.
+     - *Prompt*: Crisp, direct interrogative sentence.
+     - *Options*: Formatted cleanly as `- A) ...`, `- B) ...`, etc.
+

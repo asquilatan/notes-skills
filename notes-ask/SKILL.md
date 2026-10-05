@@ -57,12 +57,13 @@ Keep responses compact so the student can absorb the answer in 30 seconds and re
 
 ---
 
-## 4. Persisting to Module `questions.md`
+## 4. Persisting to Module `questions.md` & Root `agent_notes.md`
 
 > [!IMPORTANT]
-> **DEDICATED `questions.md` (ZERO `notes.md` / LESSON BLOAT)**:
+> **DEDICATED `questions.md` (NO MODULE `notes.md` EXISTENCE)**:
 > All student doubts, curiosity questions, and architectural diagrams are recorded in the module's dedicated **`questions.md`** file.
-> Do NOT touch or append to `notes.md` or the lesson files during mid-lesson Q&A.
+> Modules do NOT contain a `notes.md` file. Never create one.
+> If the student's question indicates a conceptual struggle or difficulty grasping a core mechanism, log a brief observation in the top-level `agent_notes.md` under `## Learner Observations & Struggle Points`.
 
 Whenever an inquiry involves a diagram, deep clarification, or code demonstration:
 
@@ -85,7 +86,11 @@ Whenever an inquiry involves a diagram, deep clarification, or code demonstratio
 
    [Direct practical payoff sentence]
    ```
-3. **Terminal Link**: In your terminal response, provide the direct answer and diagram, along with a clickable file link pointing directly to the recorded Q&A inside `questions.md`.
+3. **Log Learner Friction (When Applicable)**: If the question stems from confusion about a fundamental prerequisite or earlier lesson, append an observation into root `agent_notes.md`:
+   ```markdown
+   - **[Module NN / Lesson NN]**: Student asked clarifying question on [Concept], exhibiting confusion regarding [Underlying Mechanism]. Addressed via diagram in questions.md.
+   ```
+4. **Terminal Link**: In your terminal response, provide the direct answer and diagram, along with a clickable file link pointing directly to the recorded Q&A inside `questions.md`.
 
 ---
 
@@ -93,7 +98,7 @@ Whenever an inquiry involves a diagram, deep clarification, or code demonstratio
 
 ### Example: Protocol Question ("How do WebSockets work?")
 
-**Terminal Output & `notes.md` Entry**:
+**Terminal Output & `questions.md` Entry**:
 ```markdown
 **A WebSocket connection starts as an ordinary HTTP/1.1 request that negotiates a protocol switch ("Handshake"), then holds that underlying TCP connection open for lightweight, bidirectional frames.**
 
