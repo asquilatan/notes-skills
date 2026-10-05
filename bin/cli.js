@@ -37,7 +37,7 @@ const SKILL_DESCRIPTIONS = {
 function printBanner() {
   console.log(`
 ${c.bold('notes-skills CLI')}
-${c.dim('Install or remove notes & learning skills for your agent')}
+${c.dim('Install, update, or remove notes & learning skills for your agent')}
 `);
 }
 
@@ -50,20 +50,24 @@ ${c.bold('Options:')}
   ${c.green('--repo, --local')}         Target current project repository (.agents/skills)
   ${c.green('--global, -g')}            Target globally (~/.agents/skills)
   ${c.green('--dest <path>')}           Target a custom directory
+  ${c.green('--update, -u')}            Update existing installed notes-* skills
   ${c.green('--remove, -r')}            Remove installed notes-* skills
   ${c.green('--all, -y, --yes')}        Apply to all skills without prompting
   ${c.green('--force')}                 Force overwrite without asking
   ${c.green('--help, -h')}              Show this help message
 
 ${c.bold('Examples:')}
-  ${c.dim('# Interactive wizard (Install or Remove)')}
+  ${c.dim('# Interactive wizard (Install, Update, or Remove)')}
   npx github:asquilatan/notes-skills
 
   ${c.dim('# Install to current repo')}
   npx github:asquilatan/notes-skills --repo
 
-  ${c.dim('# Install globally')}
-  npx github:asquilatan/notes-skills --global
+  ${c.dim('# Update existing skills in current repo')}
+  npx github:asquilatan/notes-skills --update --repo
+
+  ${c.dim('# Update existing skills globally')}
+  npx github:asquilatan/notes-skills --update --global
 
   ${c.dim('# Remove from current repo')}
   npx github:asquilatan/notes-skills --remove --repo
@@ -137,6 +141,7 @@ async function main() {
   const isRepoFlag = args.includes('--repo') || args.includes('--local');
   const isGlobalFlag = args.includes('--global') || args.includes('-g');
   let isRemove = args.includes('--remove') || args.includes('--uninstall') || args.includes('-r');
+  let isUpdate = args.includes('--update') || args.includes('-u');
 
   let destArg = null;
   const destIndex = args.indexOf('--dest');
@@ -171,13 +176,17 @@ async function main() {
   try {
     // If action not specified by flag and no quick flags, ask what to do
     const hasExplicitTargetFlag = isRepoFlag || isGlobalFlag || Boolean(destArg);
-    if (!isRemove && !hasExplicitTargetFlag) {
+    const hasExplicitActionFlag = isRemove || isUpdate;
+    if (!hasExplicitActionFlag && !hasExplicitTargetFlag) {
       console.log(`${c.bold('What would you like to do?')}`);
       console.log(`  ${c.cyan('[1]')} Install skills ${c.dim('(default)')}`);
-      console.log(`  ${c.cyan('[2]')} Remove skills`);
+      console.log(`  ${c.cyan('[2]')} Update existing skills ${c.dim('(overwrite installed skills with latest)')}`);
+      console.log(`  ${c.cyan('[3]')} Remove skills`);
 
-      const actionChoice = (await getRl().question(`\n${c.bold('Enter choice [1-2]')} ${c.dim('(default: 1)')}: `)).trim() || '1';
+      const actionChoice = (await getRl().question(`\n${c.bold('Enter choice [1-3]')} ${c.dim('(default: 1)')}: `)).trim() || '1';
       if (actionChoice === '2') {
+        isUpdate = true;
+      } else if (actionChoice === '3') {
         isRemove = true;
       }
       console.log('');
@@ -185,7 +194,9 @@ async function main() {
 
     // Select target directory if not set
     if (!targetDir) {
-      const verb = isRemove ? 'remove skills from' : 'install skills to';
+      let verb = 'install skills to';
+      if (isRemove) verb = 'remove skills from';
+      else if (isUpdate) verb = 'update skills in';
       console.log(`${c.bold(`Where would you like to ${verb}?`)}`);
       console.log(`  ${c.cyan('[1]')} Current repository ${c.dim('(.agents/skills)')}`);
       console.log(`      ${c.dim('Target:')} ${c.yellow(repoDefaultPath)}`);
@@ -282,6 +293,79 @@ async function main() {
       }
 
       console.log(`\n${c.green(c.bold(`✨ Successfully removed ${skillsToRemove.length} skill(s)!`))}\n`);
+      return;
+    }
+
+    // ==========================================
+    // UPDATE FLOW
+    // ==========================================
+    if (isUpdate) {
+      const installed = await findInstalledSkills(targetDir);
+
+      if (installed.length === 0) {
+        console.log(c.yellow(`ℹ️  No installed notes-* skills found in: ${targetDir}`));
+        console.log(c.dim('Tip: Run install first to set up skills.'));
+        if (rl) rl.close();
+        return;
+      }
+
+      console.log(`${c.bold('Found installed skills in')} ${c.yellow(targetDir)}:`);
+      installed.forEach((s) => {
+        const desc = SKILL_DESCRIPTIONS[s] ? ` ${c.dim(`(${SKILL_DESCRIPTIONS[s]})`)}` : '';
+        console.log(`  - ${c.bold(s)}${desc}`);
+      });
+      console.log('');
+
+      let skillsToUpdate = installed;
+      if (!isAutoYes) {
+        console.log(`${c.bold('Which skills would you like to update?')}`);
+        console.log(`  ${c.cyan('[1]')} All ${installed.length} installed skills ${c.green('(default)')}`);
+        console.log(`  ${c.cyan('[2]')} Choose individual skills`);
+
+        const updateChoice = (await getRl().question(`\n${c.bold('Enter choice [1-2]')} ${c.dim('(default: 1)')}: `)).trim() || '1';
+
+        if (updateChoice === '2') {
+          console.log(`\n${c.bold('Select skills to update:')}`);
+          installed.forEach((name, idx) => {
+            console.log(`  ${c.cyan(`[${idx + 1}]`)} ${name}`);
+          });
+
+          const selectedInput = (await getRl().question(`\n${c.bold('Enter numbers to update (comma-separated, e.g. 1,2):')} `)).trim();
+          if (selectedInput) {
+            const indices = selectedInput
+              .split(/[, ]+/)
+              .map((s) => Number.parseInt(s.trim(), 10) - 1)
+              .filter((i) => !Number.isNaN(i) && i >= 0 && i < installed.length);
+
+            if (indices.length > 0) {
+              skillsToUpdate = [...new Set(indices)].map((i) => installed[i]);
+            }
+          }
+        }
+        console.log('');
+      }
+
+      if (rl) {
+        rl.close();
+        rl = null;
+      }
+
+      console.log(`${c.bold('🔄 Updating skills in:')} ${c.yellow(targetDir)}\n`);
+      let updatedCount = 0;
+      for (const skill of skillsToUpdate) {
+        const src = path.join(packageRoot, skill);
+        const dest = path.join(targetDir, skill);
+        if (!existsSync(src)) {
+          console.log(`  ${c.yellow('⚠')} ${skill} is no longer in this package, skipping.`);
+          continue;
+        }
+        await fs.cp(src, dest, { recursive: true, force: true });
+        const desc = SKILL_DESCRIPTIONS[skill] ? ` ${c.dim(`(${SKILL_DESCRIPTIONS[skill]})`)}` : '';
+        console.log(`  ${c.green('✔')} Updated ${c.bold(skill)}${desc}`);
+        updatedCount++;
+      }
+
+      console.log(`\n${c.green(c.bold(`✨ Successfully updated ${updatedCount} skill(s) to latest version!`))}\n`);
       return;
     }
 

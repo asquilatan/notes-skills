@@ -43,7 +43,7 @@ npx --allow-git=all github:asquilatan/notes-skills
 
 *(Note: npm 11+ disables git packages by default. Run `npm config set allow-git all` once to use plain `npx github:...` without the flag).*
 
-It will ask whether you want to **install** or **remove** skills, and whether to target your current repo (`.agents/skills`) or globally (`~/.agents/skills`).
+It will ask whether you want to **install**, **update**, or **remove** skills, and whether to target your current repo (`.agents/skills`) or globally (`~/.agents/skills`).
 
 You can also use flags directly:
 
@@ -51,6 +51,10 @@ You can also use flags directly:
 # Install
 npx github:asquilatan/notes-skills --repo      # Local repo
 npx github:asquilatan/notes-skills --global    # Global
+
+# Update (overwrites installed skills with latest version)
+npx github:asquilatan/notes-skills --update --repo
+npx github:asquilatan/notes-skills --update --global
 
 # Remove
 npx github:asquilatan/notes-skills --remove --repo
