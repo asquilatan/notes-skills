@@ -28,6 +28,7 @@ const SKILL_DESCRIPTIONS = {
   'notes-create-outline': 'Generates course outlines and Mermaid dependency graphs',
   'notes-conduct-quiz': 'Runs diagnostics, check-in quizzes, and review questions',
   'notes-ask': 'Answers mid-lesson questions and logs them to questions.md',
+  'notes-practice': 'Runs on-demand sandbox practice sessions with MCQs, identification, and code writing',
   'notes-create-coding-lessons': 'Generates programming lessons with code examples',
   'notes-create-general-lessons': 'Generates lessons for non-coding and practical topics',
   'notes-validate-coding-lessons': 'Checks coding lessons for syntax and API accuracy',

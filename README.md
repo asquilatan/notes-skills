@@ -8,6 +8,7 @@ graph TD
     Outline["notes-create-outline"]
     Quiz["notes-conduct-quiz"]
     Ask["notes-ask"]
+    Practice["notes-practice"]
     CodingLessons["notes-create-coding-lessons"]
     GeneralLessons["notes-create-general-lessons"]
     ValidateCode["notes-validate-coding-lessons"]
@@ -16,6 +17,7 @@ graph TD
     Start --> Outline
     Start --> Quiz
     Start --> Ask
+    Start --> Practice
     Start --> CodingLessons
     Start --> GeneralLessons
     CodingLessons --> ValidateCode
@@ -28,6 +30,7 @@ graph TD
 - **[`notes-create-outline`](./notes-create-outline/)**: This skill generates root `agent_notes.md` (settings, preferences, struggle tracker) and true DAG `overview.md` roadmaps. Modules contain `overview.md` and `questions.md` (no module `notes.md`).
 - **[`notes-conduct-quiz`](./notes-conduct-quiz/)**: This skill conducts diagnostics, check-in quizzes, and reviews via the built-in question tool (`ask_question`) or token-saving Markdown checkboxes (`- [ ]`), logging struggle points to `agent_notes.md`.
 - **[`notes-ask`](./notes-ask/)**: This skill answers mid-lesson questions, generates Mermaid diagrams, logs Q&As to `questions.md`, and notes learner friction in `agent_notes.md`.
+- **[`notes-practice`](./notes-practice/)**: This skill conducts dedicated, low-risk sandbox practice sessions (MCQs, identification, bug hunts, real-file code writing) persisted to `practice.md` across Fixed, Unlimited, and Dynamic modes.
 - **[`notes-create-coding-lessons`](./notes-create-coding-lessons/)**: This skill generates coding lessons with runnable examples and explanations.
 - **[`notes-create-general-lessons`](./notes-create-general-lessons/)**: This skill generates lessons for non-coding and practical craft topics.
 - **[`notes-validate-coding-lessons`](./notes-validate-coding-lessons/)**: This skill checks coding lessons for syntax errors and API accuracy.

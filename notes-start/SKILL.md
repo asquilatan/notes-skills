@@ -20,7 +20,7 @@ This skill coordinates the full learning lifecycle for any technical topic. It o
 
 ## Architecture & Sub-Skills Ecosystem
 
-`notes-start` acts as the master orchestrator, delegating focused tasks across 7 specialized skills:
+`notes-start` acts as the master orchestrator, delegating focused tasks across 8 specialized skills:
 
 1. **`notes-create-outline`**: Creates and maintains top-level `agent_notes.md` (preferences, settings, struggle tracker), course `overview.md`, and module `overview.md` with true DAG Mermaid graphs.
 2. **`notes-conduct-quiz`**: Administers quizzes (diagnostic, mid-lesson check-in, module requiz, course major quiz) via chosen delivery format (built-in question tool (`ask_question`) or Markdown checkboxes `- [ ]`), updates `questions.md`, and logs learner struggles to `agent_notes.md`.
@@ -29,6 +29,7 @@ This skill coordinates the full learning lifecycle for any technical topic. It o
 5. **`notes-validate-coding-lessons`**: Audits **code and software engineering topics** (syntax, API versions, RFC specs, and runtime mechanics).
 6. **`notes-validate-general-lessons`**: Audits **non-code and practical craft topics** (factual truth of claims, scientific mechanisms, craft realism, and safety without micromanaging numbers).
 7. **`notes-ask`**: Answers mid-lesson questions and doubts with punchy, dev-to-dev explanations, zero AI fluff, targeted Mermaid diagrams (sequence/architecture/memory), persists Q&As to `questions.md`, and flags struggle areas in `agent_notes.md`.
+8. **`notes-practice`**: Conducts on-demand, low-risk sandbox practice sessions (MCQs, identification, bug hunts, real-file code writing) persisted to `practice.md` across Fixed, Unlimited, and Dynamic modes without affecting course struggle tracking.
 
 ---
 
@@ -195,6 +196,9 @@ For each lesson in the module:
    - If any question is missed:
      - **Log struggle**: Immediately record the diagnosed misconception in root `agent_notes.md` under `## Learner Observations & Struggle Points`.
      - **Activate Remediation**: For every 1 wrong answer, spawn **2 new targeted drill questions** into `questions.md` and deliver via the preferred mode (maintaining balanced answer distribution). Quizzing repeats until 100% mastery is achieved.
+6. **On-Demand Sandbox Practice**:
+   - At any point before, during, or after a lesson, if the student asks for extra practice, coding exercises, or low-stakes drilling, invoke **`notes-practice`**.
+   - `notes-practice` writes to `practice.md` and `practice-code/`, keeping practice fully sandboxed without touching `agent_notes.md`.
 
 ---
 
