@@ -5,6 +5,7 @@ My collection of skills for learning and note-taking with AI agents
 ```mermaid
 graph TD
     Start["notes-start"]
+    Continue["notes-continue"]
     Outline["notes-create-outline"]
     Quiz["notes-conduct-quiz"]
     Ask["notes-ask"]
@@ -15,6 +16,8 @@ graph TD
     ValidateGeneral["notes-validate-general-lessons"]
     HouseRules["notes-validate-house-rules"]
 
+    Start --> Continue
+    Continue --> Outline
     Start --> Outline
     Start --> Quiz
     Start --> Ask
@@ -30,6 +33,7 @@ graph TD
 ### Skills
 
 - **[`notes-start`](./notes-start/)**: This skill orchestrates the learning flow, runs the initial grill (capturing topic, scope, and quiz delivery preferences), initializes `agent_notes.md` for context-less agent handoffs, and coordinates all sub-skills.
+- **[`notes-continue`](./notes-continue/)**: This skill rehydrates a new or context-less agent from on-disk course state, summarizes the current position and open struggles, and asks one confirmation before resuming.
 - **[`notes-create-outline`](./notes-create-outline/)**: This skill generates root `agent_notes.md` (settings, preferences, struggle tracker) and true DAG `overview.md` roadmaps. Modules contain `overview.md` and `questions.md` (no module `notes.md`).
 - **[`notes-conduct-quiz`](./notes-conduct-quiz/)**: This skill conducts diagnostics, check-in quizzes, and reviews via the built-in question tool (`ask_question`) or token-saving Markdown checkboxes (`- [ ]`), logging struggle points to `agent_notes.md`.
 - **[`notes-ask`](./notes-ask/)**: This skill answers mid-lesson questions, generates Mermaid diagrams, logs Q&As to `questions.md`, and notes learner friction in `agent_notes.md`.
@@ -86,6 +90,12 @@ For a quick, low-scaffolding session with no modules or course files:
 
 ```text
 Teach me [topic] ad-hoc - no full course
+```
+
+To resume an existing course in a fresh session or with a different agent:
+
+```text
+/notes-continue
 ```
 
 ### Flow

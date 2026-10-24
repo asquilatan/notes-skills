@@ -28,7 +28,7 @@ This skill coordinates the full learning lifecycle for any technical topic. It o
 
 ## Architecture & Sub-Skills Ecosystem
 
-`notes-start` acts as the master orchestrator, delegating focused tasks across 9 specialized skills:
+`notes-start` acts as the master orchestrator, delegating focused tasks across 10 specialized skills:
 
 1. **`notes-create-outline`**: Creates and maintains top-level `agent_notes.md` (preferences, settings, struggle tracker), course `overview.md`, and module `overview.md` with true DAG Mermaid graphs.
 2. **`notes-conduct-quiz`**: Administers quizzes (diagnostic, mid-lesson check-in, module requiz, course major quiz) via chosen delivery format (built-in question tool (`ask_question`) or Markdown checkboxes `- [ ]`), updates `questions.md`, and logs learner struggles to `agent_notes.md`.
@@ -39,6 +39,7 @@ This skill coordinates the full learning lifecycle for any technical topic. It o
 7. **`notes-ask`**: Answers mid-lesson questions and doubts with punchy, dev-to-dev explanations, zero AI fluff, targeted Mermaid diagrams (sequence/architecture/memory), persists Q&As to `questions.md`, and flags struggle areas in `agent_notes.md`.
 8. **`notes-practice`**: Conducts on-demand, low-risk sandbox practice sessions (MCQs, identification, bug hunts, real-file code writing) persisted to `practice.md` across Fixed, Unlimited, and Dynamic modes without affecting course struggle tracking.
 9. **`notes-validate-house-rules`**: Audits voice, banned AI-isms, paragraph limits, jargon discipline, heading style, filename slugs, navigation links, Lesson 01 onboarding, content purity, and motif continuity. Auto-patches editorial violations in a third, fully independent subagent.
+10. **`notes-continue`**: Rehydrates a fresh or context-less agent from `agent_notes.md`, `overview.md`, and recent quiz/practice activity, then reports a compact status brief and asks one confirmation before resuming.
 
 ---
 
@@ -84,6 +85,7 @@ flowchart TD
 > [!IMPORTANT]
 > **READ `agent_notes.md` BEFORE ASKING THE LEARNER ANYTHING**:
 > A fresh, context-less agent must reconstruct state from disk before opening its mouth. Never begin a grill, diagnostic, or check-in without doing this first.
+> For a packaged rehydration flow, invoke **`notes-continue`**.
 > 1. Locate the course root (usually `./notes/`). If `agent_notes.md` exists, read it fully.
 > 2. Read root `overview.md` and the active module's `overview.md`.
 > 3. Skim the tail of the active `questions.md` and `practice.md` for the most recent activity.
