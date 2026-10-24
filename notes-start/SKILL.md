@@ -220,6 +220,22 @@ When initiating a module:
 
 ---
 
+### Step 5.5: On-Demand Supplementary Lessons
+
+When the learner asks for extra lessons on a topic already covered (a deep-dive tangent, a missing prerequisite, an advanced variation), extend the existing module. **Never spin up a new single-lesson module for supplementation.**
+
+1. **Confirm Scope**: Ask which module and what the supplement should cover. Confirm whether it is optional enrichment or a required prerequisite.
+2. **Update the Roadmaps First**: Invoke `notes-create-outline` to append the supplementary lesson plan:
+   - Number it with the next sequential integer after the highest existing lesson; do not renumber existing files.
+   - Label it `(Supplementary)` in the module `overview.md` graph and breakdown.
+   - Update navigation links on the preceding lesson.
+   - Log the addition in root `agent_notes.md`.
+3. **Author the Single Lesson**: Invoke the correct `notes-create-*` creator subagent (coding vs. general) with an explicit instruction to author **only** the new supplementary file. Existing lessons must not be rewritten.
+4. **Validate**: Run the matching technical/craft validator, then `notes-validate-house-rules`.
+5. **Completion Semantics**: Supplementary lessons are optional by default and do not block module completion or the module re-quiz. Offer a check-in quiz only if the learner wants one.
+
+---
+
 ### Step 6: Interactive Lesson Study, `questions.md`, & Remediation Quizzing
 For each lesson in the module:
 1. **User Study**: The user reads the active lesson (e.g., `01-what-is-laravel.md`).

@@ -251,3 +251,34 @@ A motif is one running example followed through its entire lifecycle, so the lea
 4. **Do Not Force It**:
    - Lessons that do not involve the motif omit it entirely. Never shoehorn the motif into a tangent module just for continuity.
    - If the user asks to remove the motif mid-course, delete it from `agent_notes.md`, `overview.md`, and stop referencing it in future lessons. Do not rewrite completed lessons unless asked.
+
+---
+
+## 8. Supplementary Lessons (Extend an Existing Module)
+
+Use this protocol when the learner asks for extra lessons on a topic already covered. Supplementary lessons extend an existing module; they do **not** justify creating a brand-new module containing a single lesson.
+
+1. **Choose the Host Module**: Attach the supplement to the module that already owns the topic. If it genuinely spans two modules, pick the one whose learning goal it extends.
+2. **Numbering (No Renumbering)**:
+   - Assign the **next sequential integer** after the highest existing lesson file (`07-<slug>.md` if `01`–`06` exist).
+   - Never renumber existing lesson files. In-course ordering comes from the graph and links, not directory sorting.
+   - Keep the standard 2–4 word slug limit.
+3. **Module `overview.md` Updates**:
+   - Add a graph node labeled `(Supplementary)`, e.g. `L07["07: Advanced Stream Teardown (Supplementary)"]:::pending`.
+   - Connect it from the lesson or milestone that motivates it. If it is purely optional enrichment, you may root it beside the sequence with a dashed optional edge (`-.->`).
+   - Add a numbered breakdown entry ending with `(Supplementary - optional)`.
+   - Define whether it is optional enrichment or a required prerequisite. Optional supplements use the normal status classes but do not block module completion.
+4. **Root `overview.md` Updates**:
+   - Only adjust the module's description if the supplement materially changes that module's scope. Do not add new modules for a supplement.
+5. **Root `agent_notes.md` Updates**:
+   - Append under `## Module Progress Log`:
+     ```markdown
+     - **[NN-module-name]**: Supplementary lesson `NN-<slug>.md` added on YYYY-MM-DD ([optional enrichment / required prerequisite]). Does not block module completion unless marked required.
+     ```
+6. **Navigation Links**:
+   - Point the preceding lesson's bottom forward-link to the new file.
+   - Give the new file the standard top back-link and a bottom forward-link to `overview.md` (or to the next supplementary lesson if several are queued).
+7. **Questions**:
+   - Do not seed `questions.md` automatically. A supplement check-in is generated on demand via `notes-conduct-quiz`, and only that supplement's content is in scope.
+8. **Multiple Supplements**:
+   - Repeat the same protocol for each new supplement, chaining the navigation links in the order they should be read. Never collapse them into a new module.
