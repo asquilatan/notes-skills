@@ -14,8 +14,10 @@ Use this skill whenever the user asks an ad-hoc question, requests clarification
 
 ## 1. Core Principles & Voice
 
-1. **Direct Answer in Sentence One**:
+1. **Direct Answer in Sentence One, Emphasized as a Block**:
    - Always deliver the direct answer, purpose, or definition in the very first sentence. Never open with pleasantries, restatements, or conversational filler.
+   - The **entire opening paragraph** (not just the first phrase) MUST be wrapped in bold emphasis (`**...**`), whether it is one sentence or two. This gives the student the answer at a glance before any mechanics.
+   - Apply the same bold opening paragraph in both the terminal response and the persisted `questions.md` entry.
 2. **Peer-to-Peer Developer Voice**:
    - Plain English, grounded, and practical. Explain mechanics like a colleague at the whiteboard.
    - Zero unexplained jargon. If introducing a low-level primitive, define its functional role immediately.
@@ -35,8 +37,8 @@ Use this skill whenever the user asks an ad-hoc question, requests clarification
 
 Keep responses compact so the student can absorb the answer in 30 seconds and return to the lesson without cognitive overload:
 
-1. **Opening Definition / Premise (1-2 sentences)**:
-   - Bold hook stating what the thing is and why it exists.
+1. **Opening Definition / Premise (1-2 sentences, Fully Bolded)**:
+   - The whole opening paragraph states what the thing is and why it exists, wrapped in bold. No bold fragments mixed with plain text in this block.
 2. **Visual Flow (Mermaid - When Needed Only)**:
    - Include a diagram if the question involves request lifecycles, protocol handshakes, architectural boundaries, or state transitions.
 3. **Core Mechanics (Flowing Prose)**:
