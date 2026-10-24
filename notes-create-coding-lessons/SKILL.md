@@ -58,8 +58,6 @@ Use this skill to generate the complete set of lesson files for code-based and s
 
    <Variants table or bullet comparison: shortcuts vs verbose forms, edge cases.>
 
-   <Senior dev aside: "I usually prefer...", "I just added X here so you can see...">
-
    <Close with forward transition paragraph: "In the next lesson, we will explore...">
 
    ---
@@ -106,8 +104,9 @@ Use this skill to generate the complete set of lesson files for code-based and s
    - **Bridge**: `We touched on X in the last lesson, but now let's see how it connects to Y.`
    - **Setup**: `Open your <path> file. You should see something like...`
    - **Check-in**: `Run the following command in your terminal. You should see...`
-   - **Aside**: `I prefer to use X here because...` / `I put Y here just to keep things clean.`
-7. **Mermaid Diagrams**:
+7. **No Sign-Off Snippets**:
+   - Never end a lesson with a personal aside, anecdote, or "senior dev" sign-off. Close with the forward transition paragraph only.
+8. **Mermaid Diagrams**:
    - Include a Mermaid diagram (`flowchart TD` or `sequenceDiagram`) whenever an architectural flow, data lifecycle, or multi-step coordination is easier to grasp visually.
    - Keep diagrams focused (5-10 nodes max).
    - Follow every diagram with a 1-2 sentence plain-English walkthrough.

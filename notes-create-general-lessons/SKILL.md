@@ -59,8 +59,6 @@ Use this skill to generate the complete set of lesson files for non-coding modul
    ### The Broken Case & Recovery
    <The most common physical failure state + exact recovery action: "If the emulsion splits: remove from heat and whisk in 1 teaspoon of cold water.">
 
-   <Senior artisan aside: "I usually prefer...", "I always let the mold sit for...">
-
    <Close with forward transition paragraph: "In the next lesson, we will explore...">
 
    ---
@@ -100,8 +98,9 @@ Use this skill to generate the complete set of lesson files for non-coding modul
    - **Bridge**: `We talked about X in the last lesson, but now let's see what happens when we introduce Y.`
    - **Setup**: `Gather your materials. You'll want...` / `Make sure your work surface is...`
    - **Check-in**: `Touch the surface gently. It should feel...` / `Observe the liquid carefully: you should see tiny bubbles forming along the rim.`
-   - **Aside**: `I usually prefer to use X here because...` / `I always keep a damp towel nearby to...`
-6. **Mermaid Diagrams**:
+6. **No Sign-Off Snippets**:
+   - Never end a lesson with a personal aside, anecdote, or "senior artisan" sign-off. Close with the forward transition paragraph only.
+7. **Mermaid Diagrams**:
    - Include a Mermaid diagram (`flowchart TD`, `flowchart LR`, or `sequenceDiagram`) whenever a process workflow, chemical/physical transformation, or timing sequence benefits from visual clarity.
    - Keep diagrams focused (5-10 nodes max).
    - Follow every diagram with a 1-2 sentence plain-English walkthrough.
