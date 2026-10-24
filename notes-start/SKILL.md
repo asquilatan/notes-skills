@@ -80,6 +80,17 @@ flowchart TD
 > 5. If no workspace exists, state that plainly and proceed to the Step 1 grill to initialize one.
 
 ### Step 1: Mandatory Grill (One Question at a Time)
+
+> [!IMPORTANT]
+> **ROADMAP DRIFT CHECK (REQUIRED WHEN ROOT `overview.md` EXISTS)**:
+> A new request is not automatically a new topic or the same topic. Always surface the recorded roadmap before proceeding:
+> 1. Summarize the roadmap in 1-2 sentences: course title, **Current Position**, and how many modules remain.
+> 2. Ask explicitly: *"Your course is currently at [current module/lesson] in [course title]. Do you want to continue there, jump to a different module, or start something new?"*
+> 3. **Continue**: skip the new-topic grill and resume from the recorded frontier.
+> 4. **Jump**: confirm the target module, update `overview.md` and `agent_notes.md`, then resume.
+> 5. **New topic**: confirm whether to archive the existing course, keep it alongside a new course folder, or overwrite. Record the decision in `agent_notes.md` before generating anything.
+> Never let the conversation drift into an unrelated topic while the on-disk roadmap says otherwise.
+
 Do NOT generate course files until the user has been grilled. Ask **one question at a time** in the terminal, wait for the response, and then ask the next:
 
 1. **Topic & Specific Outcome**: "What exact topic do you want to learn, and what concrete project or outcome do you want to achieve with it?"
