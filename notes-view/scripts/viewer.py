@@ -14,9 +14,12 @@ from __future__ import annotations
 import argparse
 import json
 import mimetypes
+import os
 import re
 import socket
 import sys
+import tempfile
+import threading
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -24,6 +27,15 @@ from urllib.parse import parse_qs, unquote, urlsplit
 
 MARKDOWN_SUFFIXES = {".md", ".markdown"}
 IGNORED_DIRS = {"node_modules", "__pycache__", "venv"}
+
+DEFAULT_WRITABLE = "questions.md"
+MAX_ANSWER_CHARS = 200
+MAX_REQUEST_BYTES = 8192
+
+TASK_CHECKBOX_RE = re.compile(r"^ {0,3}[-*+][ \t]+\[([ xX])\](?=[ \t]|$)")
+FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
+INLINE_CODE_RE = re.compile(r"(`+)(?:(?!\1).)*?\1", re.DOTALL)
+BLANK_RE = re.compile(r"(?<!_)_{3}(?!_)")
 
 HTML_PAGE = r"""<!doctype html>
 <html lang="en">
@@ -319,6 +331,48 @@ HTML_PAGE = r"""<!doctype html>
     vertical-align: -0.12em;
     accent-color: var(--accent);
   }
+  .markdown-body input[type="checkbox"]:not([disabled]) {
+    width: 1.2em;
+    height: 1.2em;
+    cursor: pointer;
+  }
+  .markdown-body .blank-slot {
+    font: inherit;
+    font-weight: 600;
+    color: var(--accent);
+    background: transparent;
+    border: 0;
+    border-radius: 4px;
+    padding: 0 4px;
+    margin: 0 1px;
+    min-width: 2.6em;
+    min-height: 30px;
+    vertical-align: baseline;
+    text-decoration: underline dashed;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .markdown-body .blank-slot:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .markdown-body .blank-input {
+    font: inherit;
+    color: var(--fg);
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    padding: 2px 6px;
+    min-width: 8em;
+    max-width: 100%;
+  }
+  .markdown-body .blank-filled {
+    color: var(--accent);
+    font-weight: 600;
+    border-bottom: 1px solid var(--accent);
+  }
   .markdown-body .mermaid {
     margin: 1.2em 0;
     overflow-x: auto;
@@ -347,6 +401,24 @@ HTML_PAGE = r"""<!doctype html>
   }
   .katex-display { display: block; overflow-x: auto; overflow-y: hidden; padding: 2px 0; }
   .katex-display > .katex { display: block; max-width: none; overflow: visible; }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    z-index: 60;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: var(--fg);
+    color: var(--bg);
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 12px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .toast.error { background: var(--accent); color: #ffffff; }
 
   .placeholder { padding: 2rem 0; color: var(--muted); font-size: 15px; }
   .placeholder pre {
@@ -384,6 +456,7 @@ HTML_PAGE = r"""<!doctype html>
 </main>
 
 <div id="scrim" class="scrim" aria-hidden="true"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <aside id="drawer" class="drawer" aria-label="Notes navigation" aria-hidden="true">
   <div class="drawer-head">
@@ -407,9 +480,11 @@ const menuBtn = document.getElementById('menuBtn');
 const closeBtn = document.getElementById('closeBtn');
 const fileTitle = document.getElementById('fileTitle');
 const breadcrumb = document.getElementById('breadcrumb');
+const toast = document.getElementById('toast');
 
 const MD_RE = /\.(md|markdown)$/i;
-const state = { current: null, tree: [], rootName: 'Notes' };
+const ANSWER_TOKEN = '___';
+const state = { current: null, tree: [], rootName: 'Notes', writable: new Set(), fingerprint: '' };
 
 function encodePath(path) {
   return path.split('/').map(encodeURIComponent).join('/');
@@ -531,6 +606,9 @@ async function loadTree() {
   const data = await response.json();
   state.tree = Array.isArray(data.tree) ? data.tree : [];
   state.rootName = data.root || 'Notes';
+  state.writable = new Set(
+    (Array.isArray(data.writable) ? data.writable : []).map((name) => String(name).toLowerCase())
+  );
   treeEl.textContent = '';
   if (!state.tree.length) {
     const empty = document.createElement('div');
@@ -591,6 +669,205 @@ content.addEventListener('click', (event) => {
   if (!anchor || !anchor.dataset.note) return;
   event.preventDefault();
   navigate(anchor.dataset.note);
+});
+
+function fnv1a(text) {
+  let hash = 2166136261;
+  for (const byte of new TextEncoder().encode(text)) {
+    hash ^= byte;
+    hash = Math.imul(hash, 16777619) >>> 0;
+  }
+  return hash.toString(16).padStart(8, '0');
+}
+
+function isWritable(path) {
+  return Boolean(path) && state.writable.has(basename(path).toLowerCase());
+}
+
+let toastTimer = null;
+function showToast(message, isError = false) {
+  toast.textContent = message;
+  toast.classList.toggle('error', Boolean(isError));
+  toast.classList.add('show');
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => toast.classList.remove('show'), isError ? 3600 : 1400);
+}
+
+async function submitAnswer(payload) {
+  if (!state.current) throw new Error('Open a note first.');
+  const response = await fetch('/api/answer', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ path: state.current, source: state.fingerprint, ...payload }),
+  });
+  let data = null;
+  try {
+    data = await response.json();
+  } catch {
+    data = null;
+  }
+  if (!response.ok) throw new Error((data && data.error) || 'Could not save the answer.');
+  if (data && typeof data.source === 'string') state.fingerprint = data.source;
+  showToast('Saved');
+  return data;
+}
+
+function blankPositions(text) {
+  const positions = [];
+  let index = text.indexOf(ANSWER_TOKEN);
+  while (index !== -1) {
+    const before = index > 0 ? text[index - 1] : '';
+    const after = text[index + ANSWER_TOKEN.length] || '';
+    if (before !== '_' && after !== '_') positions.push(index);
+    index = text.indexOf(ANSWER_TOKEN, index + ANSWER_TOKEN.length);
+  }
+  return positions;
+}
+
+function prepareCheckboxes() {
+  let ordinal = 0;
+  content.querySelectorAll('input[type="checkbox"]').forEach((box) => {
+    box.disabled = false;
+    box.dataset.checkboxIndex = String(ordinal);
+    ordinal += 1;
+  });
+}
+
+function prepareBlanks() {
+  const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      if (!node.nodeValue.includes(ANSWER_TOKEN)) return NodeFilter.FILTER_REJECT;
+      const parent = node.parentElement;
+      if (parent && parent.closest('pre, code, .blank-input, .blank-filled')) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    },
+  });
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+
+  let ordinal = 0;
+  for (const node of nodes) {
+    const positions = blankPositions(node.nodeValue);
+    if (!positions.length) continue;
+    const fragment = document.createDocumentFragment();
+    let cursor = 0;
+    for (const position of positions) {
+      if (position > cursor) fragment.append(node.nodeValue.slice(cursor, position));
+      const slot = document.createElement('button');
+      slot.type = 'button';
+      slot.className = 'blank-slot';
+      slot.dataset.blankIndex = String(ordinal);
+      slot.setAttribute('aria-label', 'Fill in the blank');
+      slot.textContent = ANSWER_TOKEN;
+      fragment.append(slot);
+      ordinal += 1;
+      cursor = position + ANSWER_TOKEN.length;
+    }
+    if (cursor < node.nodeValue.length) fragment.append(node.nodeValue.slice(cursor));
+    node.replaceWith(fragment);
+  }
+}
+
+function prepareAnswers(path) {
+  if (!isWritable(path)) return;
+  prepareCheckboxes();
+  prepareBlanks();
+}
+
+function renumberBlanks(filledIndex) {
+  content.querySelectorAll('button.blank-slot').forEach((slot) => {
+    const current = Number(slot.dataset.blankIndex);
+    if (current > filledIndex) slot.dataset.blankIndex = String(current - 1);
+  });
+}
+
+function startBlankEdit(slot) {
+  if (slot.dataset.editing === '1') return;
+  slot.dataset.editing = '1';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'blank-input';
+  input.autocomplete = 'off';
+  input.placeholder = 'answer';
+  input.enterKeyHint = 'done';
+  input.setAttribute('aria-label', 'Your answer');
+  slot.replaceWith(input);
+  input.focus({ preventScroll: true });
+
+  let settled = false;
+  const restore = () => {
+    if (settled) return;
+    settled = true;
+    input.replaceWith(slot);
+    delete slot.dataset.editing;
+  };
+
+  const commit = async () => {
+    if (settled) return;
+    const value = input.value.trim();
+    if (!value) {
+      restore();
+      return;
+    }
+    if (value.includes(ANSWER_TOKEN) || /[\r\n]/.test(value)) {
+      showToast('Keep the answer on one line, without ___ inside it.', true);
+      input.focus();
+      return;
+    }
+    settled = true;
+    input.disabled = true;
+    const index = Number(slot.dataset.blankIndex);
+    try {
+      await submitAnswer({ kind: 'blank', index, value });
+      const filled = document.createElement('span');
+      filled.className = 'blank-filled';
+      filled.textContent = value;
+      input.replaceWith(filled);
+      renumberBlanks(index);
+    } catch (error) {
+      settled = false;
+      input.disabled = false;
+      showToast(error.message, true);
+      input.focus();
+    }
+  };
+
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      commit();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      restore();
+    }
+  });
+  input.addEventListener('blur', () => {
+    if (!settled) commit();
+  });
+}
+
+content.addEventListener('click', (event) => {
+  const slot = event.target.closest('button.blank-slot');
+  if (!slot) return;
+  event.preventDefault();
+  startBlankEdit(slot);
+});
+
+content.addEventListener('change', async (event) => {
+  const box = event.target;
+  if (!(box instanceof HTMLInputElement) || box.type !== 'checkbox') return;
+  if (!box.dataset.checkboxIndex || !isWritable(state.current)) return;
+  const desired = box.checked;
+  box.disabled = true;
+  try {
+    await submitAnswer({ kind: 'checkbox', index: Number(box.dataset.checkboxIndex), checked: desired });
+  } catch (error) {
+    box.checked = !desired;
+    showToast(error.message, true);
+  } finally {
+    box.disabled = false;
+  }
 });
 
 function prepareMermaid() {
@@ -796,6 +1073,8 @@ async function loadFile(path, { preserveScroll = false } = {}) {
       throw new Error('The Markdown renderer could not load. Check the connection and reload the page.');
     }
     content.innerHTML = window.marked.parse(text, { gfm: true, breaks: false });
+    state.fingerprint = fnv1a(text);
+    prepareAnswers(path);
     prepareMermaid();
     rewriteLinks();
     renderMath();
@@ -936,10 +1215,127 @@ def resolve_within(root: Path, raw: str) -> Path | None:
     return target
 
 
+def fence_mask(lines: list[str]) -> list[bool]:
+    """Mark lines that belong to a fenced code block so their contents are ignored."""
+    mask: list[bool] = []
+    fence: tuple[str, int] | None = None
+    for line in lines:
+        body = line.rstrip("\r\n")
+        if fence is None:
+            match = FENCE_RE.match(body)
+            if match:
+                fence = (match.group(1)[0], len(match.group(1)))
+                mask.append(True)
+            else:
+                mask.append(False)
+            continue
+        mask.append(True)
+        stripped = body.strip()
+        if stripped and set(stripped) == {fence[0]} and len(stripped) >= fence[1]:
+            fence = None
+    return mask
+
+
+def inline_code_spans(line: str) -> list[tuple[int, int]]:
+    return [(match.start(), match.end()) for match in INLINE_CODE_RE.finditer(line)]
+
+
+def task_checkbox_lines(lines: list[str], mask: list[bool]) -> list[int]:
+    return [
+        index for index, line in enumerate(lines)
+        if not mask[index] and TASK_CHECKBOX_RE.match(line.rstrip("\r\n"))
+    ]
+
+
+def blank_slots(lines: list[str], mask: list[bool]) -> list[tuple[int, int, int]]:
+    slots: list[tuple[int, int, int]] = []
+    for index, line in enumerate(lines):
+        if mask[index]:
+            continue
+        spans = inline_code_spans(line)
+        for match in BLANK_RE.finditer(line):
+            if any(start <= match.start() < end for start, end in spans):
+                continue
+            slots.append((index, match.start(), match.end()))
+    return slots
+
+
+def toggle_checkbox(text: str, index: int, checked: bool) -> tuple[str, bool] | None:
+    lines = text.splitlines(keepends=True)
+    targets = task_checkbox_lines(lines, fence_mask(lines))
+    if not 0 <= index < len(targets):
+        return None
+    line_index = targets[index]
+    match = TASK_CHECKBOX_RE.match(lines[line_index].rstrip("\r\n"))
+    if match is None:
+        return None
+    desired = "x" if checked else " "
+    if match.group(1).casefold() == desired:
+        return text, False
+    start, end = match.span(1)
+    line = lines[line_index]
+    lines[line_index] = line[:start] + desired + line[end:]
+    return "".join(lines), True
+
+
+def fill_blank(text: str, index: int, value: str) -> tuple[str, bool] | None:
+    lines = text.splitlines(keepends=True)
+    slots = blank_slots(lines, fence_mask(lines))
+    if not 0 <= index < len(slots):
+        return None
+    line_index, start, end = slots[index]
+    line = lines[line_index]
+    lines[line_index] = line[:start] + value + line[end:]
+    return "".join(lines), True
+
+
+def validate_answer(value: object) -> str | None:
+    if not isinstance(value, str):
+        return None
+    answer = value.strip()
+    if not answer or len(answer) > MAX_ANSWER_CHARS:
+        return None
+    if "\n" in answer or "\r" in answer or "___" in answer:
+        return None
+    if any(ord(character) < 32 for character in answer):
+        return None
+    return answer
+
+
+def fingerprint(payload: bytes) -> str:
+    """FNV-1a of the raw file, matching the browser so stale pages can be rejected."""
+    value = 2166136261
+    for byte in payload:
+        value = ((value ^ byte) * 16777619) & 0xFFFFFFFF
+    return f"{value:08x}"
+
+
+def write_atomic(target: Path, payload: bytes, expected: bytes) -> bool:
+    """Replace the file only if it still holds the bytes this edit was based on."""
+    try:
+        if target.read_bytes() != expected:
+            return False
+    except OSError:
+        return False
+    handle, temp_name = tempfile.mkstemp(dir=target.parent, prefix=".notes-view-", suffix=".tmp")
+    try:
+        with os.fdopen(handle, "wb") as stream:
+            stream.write(payload)
+        os.replace(temp_name, target)
+    except BaseException:
+        try:
+            os.unlink(temp_name)
+        except OSError:
+            pass
+        raise
+    return True
+
+
 class NotesRequestHandler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
     root: Path = Path(".").resolve()
     verbose: bool = False
+    writable: frozenset[str] = frozenset({DEFAULT_WRITABLE})
 
     def log_message(self, fmt: str, *args) -> None:
         if self.verbose:
@@ -977,6 +1373,7 @@ class NotesRequestHandler(BaseHTTPRequestHandler):
             self._send_json(HTTPStatus.OK, {
                 "root": self.root.name or str(self.root),
                 "tree": scan_tree(self.root, self.root),
+                "writable": sorted(self.writable),
             })
             return
 
@@ -1019,8 +1416,137 @@ class NotesRequestHandler(BaseHTTPRequestHandler):
 
         self._send_text(HTTPStatus.NOT_FOUND, "Not found.")
 
+    def _same_origin(self) -> bool:
+        origin = self.headers.get("Origin")
+        if origin is None:
+            return True
+        host = self.headers.get("Host")
+        try:
+            return bool(host) and urlsplit(origin).netloc == host
+        except ValueError:
+            return False
+
+    def _is_json_request(self) -> bool:
+        return self.headers.get("Content-Type", "").split(";")[0].strip().lower() == "application/json"
+
+    def _read_body(self) -> bytes | None:
+        try:
+            length = int(self.headers.get("Content-Length", ""))
+        except ValueError:
+            self.close_connection = True
+            return None
+        if not 0 < length <= MAX_REQUEST_BYTES:
+            self.close_connection = True
+            return None
+        return self.rfile.read(length)
+
+    def do_POST(self) -> None:
+        if urlsplit(self.path).path != "/api/answer":
+            self._send_json(HTTPStatus.NOT_FOUND, {"error": "Not found."})
+            return
+        if not self._same_origin():
+            self._send_json(HTTPStatus.FORBIDDEN, {"error": "Cross-origin answer rejected."})
+            return
+
+        body = self._read_body()
+        if body is None:
+            self._send_json(HTTPStatus.BAD_REQUEST, {"error": "Expected a small JSON answer body."})
+            return
+        if not self._is_json_request():
+            self._send_json(HTTPStatus.UNSUPPORTED_MEDIA_TYPE, {"error": "Expected application/json."})
+            return
+        try:
+            payload = json.loads(body.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            self._send_json(HTTPStatus.BAD_REQUEST, {"error": "Malformed JSON answer body."})
+            return
+        if not isinstance(payload, dict):
+            self._send_json(HTTPStatus.BAD_REQUEST, {"error": "Expected a JSON object."})
+            return
+
+        requested = payload.get("path")
+        kind = payload.get("kind")
+        index = payload.get("index")
+        if not isinstance(requested, str) or not isinstance(index, int) or isinstance(index, bool):
+            self._send_json(HTTPStatus.BAD_REQUEST, {"error": "Missing answer path, kind, or index."})
+            return
+        if index < 0:
+            self._send_json(HTTPStatus.BAD_REQUEST, {"error": "Index must be zero or positive."})
+            return
+
+        target = resolve_within(self.root, requested)
+        if target is None or not target.is_file() or target.suffix.lower() not in MARKDOWN_SUFFIXES:
+            self._send_json(HTTPStatus.NOT_FOUND, {"error": "Markdown file not found."})
+            return
+        if target.name.casefold() not in self.writable:
+            self._send_json(HTTPStatus.FORBIDDEN, {"error": "This file is not open for answers."})
+            return
+
+        if kind == "checkbox":
+            checked = payload.get("checked")
+            if not isinstance(checked, bool):
+                self._send_json(HTTPStatus.BAD_REQUEST, {"error": "A checkbox answer needs true or false."})
+                return
+            value = None
+        elif kind == "blank":
+            value = validate_answer(payload.get("value"))
+            if value is None:
+                self._send_json(
+                    HTTPStatus.BAD_REQUEST,
+                    {"error": f"Blank answers need 1-{MAX_ANSWER_CHARS} characters on one line, without ___."},
+                )
+                return
+        else:
+            self._send_json(HTTPStatus.BAD_REQUEST, {"error": "Unknown answer kind."})
+            return
+
+        with self.server.write_lock:
+            try:
+                raw = target.read_bytes()
+                text = raw.decode("utf-8")
+            except UnicodeDecodeError:
+                self._send_json(HTTPStatus.UNSUPPORTED_MEDIA_TYPE, {"error": "File is not valid UTF-8."})
+                return
+            except OSError as exc:
+                self._send_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": f"Could not read file: {exc}"})
+                return
+
+            source = payload.get("source")
+            if source is not None and source != fingerprint(raw):
+                self._send_json(
+                    HTTPStatus.CONFLICT,
+                    {"error": "The file changed since this page loaded. Reload and try again."},
+                )
+                return
+
+            if kind == "checkbox":
+                result = toggle_checkbox(text, index, checked)
+            else:
+                result = fill_blank(text, index, value)
+            if result is None:
+                self._send_json(
+                    HTTPStatus.CONFLICT,
+                    {"error": "That answer is no longer in the file. Reload the page and try again."},
+                )
+                return
+
+            updated, changed = result
+            saved = updated.encode("utf-8")
+            if changed and not write_atomic(target, saved, raw):
+                self._send_json(
+                    HTTPStatus.CONFLICT,
+                    {"error": "The file changed while saving. Reload the page and try again."},
+                )
+                return
+            if not changed:
+                saved = raw
+
+        self._send_json(HTTPStatus.OK, {"ok": True, "changed": changed, "source": fingerprint(saved)})
+
 
 class NotesServer(ThreadingHTTPServer):
+    write_lock = threading.Lock()
+
     def handle_error(self, request, client_address) -> None:
         error = sys.exc_info()[1]
         if isinstance(error, (BrokenPipeError, ConnectionAbortedError, ConnectionResetError)):
@@ -1049,6 +1575,11 @@ def main() -> int:
     )
     parser.add_argument("--port", "-p", type=int, default=8080, help="Port to listen on (default: 8080)")
     parser.add_argument("--host", default="0.0.0.0", help="Address to bind (default: 0.0.0.0)")
+    parser.add_argument(
+        "--writable", nargs="+", default=[], metavar="FILENAME",
+        help=f"Extra files whose task checkboxes and ___ blanks may be answered "
+             f"({DEFAULT_WRITABLE} is always writable)",
+    )
     parser.add_argument("--verbose", action="store_true", help="Log every HTTP request")
     args = parser.parse_args()
 
@@ -1056,12 +1587,23 @@ def main() -> int:
         print("error: --port must be between 0 and 65535", file=sys.stderr)
         return 2
 
+    writable = {DEFAULT_WRITABLE}
+    for name in args.writable:
+        if Path(name).name != name or not name:
+            print(f"error: --writable takes plain filenames, not paths: {name}", file=sys.stderr)
+            return 2
+        writable.add(name.casefold())
+
     root = Path(args.directory).expanduser().resolve()
     if not root.is_dir():
         print(f"error: directory not found: {root}", file=sys.stderr)
         return 2
 
-    handler = type("BoundNotesHandler", (NotesRequestHandler,), {"root": root, "verbose": args.verbose})
+    handler = type(
+        "BoundNotesHandler",
+        (NotesRequestHandler,),
+        {"root": root, "verbose": args.verbose, "writable": frozenset(writable)},
+    )
     try:
         server = NotesServer((args.host, args.port), handler)
     except OSError as exc:
@@ -1074,6 +1616,7 @@ def main() -> int:
     print()
     print("  Notes viewer")
     print(f"  Serving   {root}")
+    print(f"  Answers   {', '.join(sorted(writable))}")
     print(f"  Local     http://localhost:{port}")
     if args.host in ("0.0.0.0", ""):
         ip = lan_address()
