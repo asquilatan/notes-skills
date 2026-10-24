@@ -75,6 +75,7 @@ flowchart TD
    - Line 1 is the back-link (`[← Back to Overview](./overview.md)` for Lesson 01, `[← Previous: ... ] | [Overview](./overview.md)` afterward).
    - The final line is the forward-link (`[Next: ... →]`), ending with `[Next: Module Overview & Quizzes →](./overview.md)` on the last lesson.
    - Every relative path resolves to a real file.
+   - **Exception**: standalone `notes/adhoc-*.md` files have no navigation chain. Do not flag missing links there.
 10. **Content Purity**:
     - Lesson files contain no quizzes, checkboxes, evaluations, or remediation drills. Those live exclusively in `questions.md`.
     - Learning preferences or struggle logs do not appear in lessons; they belong in root `agent_notes.md`.
