@@ -13,6 +13,7 @@ graph TD
     GeneralLessons["notes-create-general-lessons"]
     ValidateCode["notes-validate-coding-lessons"]
     ValidateGeneral["notes-validate-general-lessons"]
+    HouseRules["notes-validate-house-rules"]
 
     Start --> Outline
     Start --> Quiz
@@ -22,6 +23,8 @@ graph TD
     Start --> GeneralLessons
     CodingLessons --> ValidateCode
     GeneralLessons --> ValidateGeneral
+    ValidateCode --> HouseRules
+    ValidateGeneral --> HouseRules
 ```
 
 ### Skills
@@ -35,6 +38,7 @@ graph TD
 - **[`notes-create-general-lessons`](./notes-create-general-lessons/)**: This skill generates lessons for non-coding and practical craft topics.
 - **[`notes-validate-coding-lessons`](./notes-validate-coding-lessons/)**: This skill checks coding lessons for syntax errors and API accuracy.
 - **[`notes-validate-general-lessons`](./notes-validate-general-lessons/)**: This skill checks non-coding lessons for factual accuracy and realism.
+- **[`notes-validate-house-rules`](./notes-validate-house-rules/)**: This skill audits voice, banned AI-isms, paragraph limits, jargon discipline, filenames, navigation, and content purity, then auto-patches editorial violations.
 
 ## Installation & Management
 
@@ -83,5 +87,5 @@ Teach me [topic]
 1. **Initial Grill**: The agent asks questions one at a time to establish your goals, target scope (deep dive vs. breadth), and preferred question delivery format (built-in question tool vs. token-saving `- [ ]` markdown checkboxes). It saves these settings to root `agent_notes.md` so any new agent can pick up your exact preferences without prior context.
 2. **Diagnostic Quiz**: It runs a quick adaptive diagnostic to determine your baseline knowledge frontier.
 3. **Curriculum Outline**: It generates `overview.md` with a true DAG dependency graph and sets up module directories (`overview.md` + `questions.md`; no module `notes.md`).
-4. **Lesson Generation & Validation**: The orchestrator delegates drafting to a dedicated creator subagent, and strictly invokes a **completely separate subagent** to independently audit and validate the lessons before logging verification status to `agent_notes.md`.
+4. **Lesson Generation & Validation**: The orchestrator delegates drafting to a dedicated creator subagent, invokes a **completely separate subagent** for technical or factual validation, then invokes a **third independent subagent** to audit voice and house rules before logging verification status to `agent_notes.md`.
 5. **Check-ins & Progression**: You read each lesson and take check-ins via your preferred mode (built-in question tool or checking `- [x]` in `questions.md`). Any missed questions activate remediation drills and log struggle points in `agent_notes.md` to ensure mastery before advancing.

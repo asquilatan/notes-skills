@@ -1,6 +1,6 @@
 ---
 name: notes-start
-description: "Master interactive learning orchestrator. Guides topic selection through grilling, records preferences and struggle points in root agent_notes.md for context-less agent handoffs, generates true DAG dependency graphs, administers quizzes via built-in question tool or token-saving markdown checkboxes, delegates lesson creation using the 'one dev teaching another' house style, and audits content with dual subagents."
+description: "Master interactive learning orchestrator. Guides topic selection through grilling, records preferences and struggle points in root agent_notes.md for context-less agent handoffs, generates true DAG dependency graphs, administers quizzes via built-in question tool or token-saving markdown checkboxes, delegates lesson creation using the 'one dev teaching another' house style, and audits content with independent technical and house-rules subagents."
 license: MIT
 metadata:
   author: user
@@ -28,7 +28,7 @@ This skill coordinates the full learning lifecycle for any technical topic. It o
 
 ## Architecture & Sub-Skills Ecosystem
 
-`notes-start` acts as the master orchestrator, delegating focused tasks across 8 specialized skills:
+`notes-start` acts as the master orchestrator, delegating focused tasks across 9 specialized skills:
 
 1. **`notes-create-outline`**: Creates and maintains top-level `agent_notes.md` (preferences, settings, struggle tracker), course `overview.md`, and module `overview.md` with true DAG Mermaid graphs.
 2. **`notes-conduct-quiz`**: Administers quizzes (diagnostic, mid-lesson check-in, module requiz, course major quiz) via chosen delivery format (built-in question tool (`ask_question`) or Markdown checkboxes `- [ ]`), updates `questions.md`, and logs learner struggles to `agent_notes.md`.
@@ -38,6 +38,7 @@ This skill coordinates the full learning lifecycle for any technical topic. It o
 6. **`notes-validate-general-lessons`**: Audits **non-code and practical craft topics** (factual truth of claims, scientific mechanisms, craft realism, and safety without micromanaging numbers).
 7. **`notes-ask`**: Answers mid-lesson questions and doubts with punchy, dev-to-dev explanations, zero AI fluff, targeted Mermaid diagrams (sequence/architecture/memory), persists Q&As to `questions.md`, and flags struggle areas in `agent_notes.md`.
 8. **`notes-practice`**: Conducts on-demand, low-risk sandbox practice sessions (MCQs, identification, bug hunts, real-file code writing) persisted to `practice.md` across Fixed, Unlimited, and Dynamic modes without affecting course struggle tracking.
+9. **`notes-validate-house-rules`**: Audits voice, banned AI-isms, paragraph limits, jargon discipline, heading style, filename slugs, navigation links, Lesson 01 onboarding, content purity, and motif continuity. Auto-patches editorial violations in a third, fully independent subagent.
 
 ---
 
@@ -56,8 +57,10 @@ flowchart TD
     H -- Craft / Non-Code --> H2["Create: notes-create-general-lessons"]
     H1 --> V1["Validate: notes-validate-coding-lessons"]
     H2 --> V2["Validate: notes-validate-general-lessons"]
-    V1 --> J["10. Student Reads Lesson -> Signals 'Ready'"]
-    V2 --> J
+    V1 --> W1["Audit: notes-validate-house-rules"]
+    V2 --> W2["Audit: notes-validate-house-rules"]
+    W1 --> J["10. Student Reads Lesson -> Signals 'Ready'"]
+    W2 --> J
     J --> K["11. Lesson Quiz in questions.md -> Delivered via Built-in Tool or [ ] Checkboxes"]
     K --> L{"Passed Lesson Quiz (100%)?"}
     L -- No --> M["Remediation Drills in questions.md & Log Struggle in agent_notes.md"]
@@ -187,9 +190,10 @@ When initiating a module:
 >
 > **MANDATORY ENFORCEMENT: USE A DIFFERENT SUBAGENT FOR CREATING AND VALIDATING**:
 > - **Creator Subagent (Subagent 1)** authors the lesson files to disk.
-> - **Validator Subagent (Subagent 2)** MUST be an entirely **separate, freshly invoked subagent instance** with a clean context.
-> - **STRICTLY FORBIDDEN TO REUSE**: NEVER send the validation task to the same subagent that authored the lesson files. Reusing the creator subagent causes severe confirmation bias ("grading its own homework") and blinds the agent to its own hallucinations or syntax errors.
-> - **NEVER COMBINE**: Never combine lesson creation and validation into a single subagent prompt, single turn, or single subagent conversation.
+> - **Technical/Craft Validator (Subagent 2)** MUST be an entirely **separate, freshly invoked subagent instance** with a clean context.
+> - **House Rules Auditor (Subagent 3)** MUST be another **separate, freshly invoked subagent instance**. It audits voice, structure, and editorial rules after technical validation.
+> - **STRICTLY FORBIDDEN TO REUSE**: NEVER send validation or house-rules tasks to the same subagent that authored the lesson files. Reusing the creator subagent causes severe confirmation bias ("grading its own homework") and blinds the agent to its own hallucinations or syntax errors.
+> - **NEVER COMBINE**: Never combine lesson creation, technical validation, and house-rules auditing into a single subagent prompt, turn, or conversation.
 > - **NO ORCHESTRATOR INLINE AUTHORING**: Never write or audit lesson files directly in the orchestrator.
 
 1. **Delegate Lesson Content Creation (Subagent 1 - Independent Creator)**:
@@ -204,8 +208,12 @@ When initiating a module:
    - **For Practical Craft / Non-Code Topics**: Invoke the dedicated craft auditor subagent (`invoke_subagent`) using **`notes-validate-general-lessons`** (checks factual truth of claims, scientific mechanisms, craft realism, and safety without micromanaging numbers).
    - The auditor independently inspects the files on disk, auto-patches any technical or factual bugs, and reports status.
    - The orchestrator stays hands-off regarding deep content editing.
-3. **Notify User**:
-   - Once creation and technical audit complete, inform the user in the terminal that the module is ready to begin at Lesson 01.
+3. **Delegate Editorial House-Rules Audit (Subagent 3 - Strictly Different Subagent)**:
+   - After technical/craft validation, invoke a **third, completely new subagent** using **`notes-validate-house-rules`**.
+   - It checks voice, banned AI-isms, paragraph limits, jargon discipline, heading style, filename slugs, navigation links, Lesson 01 onboarding structure, content purity, and motif continuity.
+   - It auto-patches editorial violations without altering technical facts, and reports a compact PASS/PATCHED summary.
+4. **Notify User**:
+   - Once creation, technical/craft validation, and house-rules audit complete, inform the user in the terminal that the module is ready to begin at Lesson 01.
 
 ---
 

@@ -33,6 +33,7 @@ const SKILL_DESCRIPTIONS = {
   'notes-create-general-lessons': 'Generates lessons for non-coding and practical topics',
   'notes-validate-coding-lessons': 'Checks coding lessons for syntax and API accuracy',
   'notes-validate-general-lessons': 'Checks non-coding lessons for factual accuracy',
+  'notes-validate-house-rules': 'Audits lesson voice, structure, and editorial house rules',
 };
 
 function printBanner() {
