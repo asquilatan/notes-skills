@@ -37,6 +37,7 @@ python3 "<skill-dir>/scripts/viewer.py" --directory "<notes-dir>" --port 8080
 
 - On Windows use `python`; on macOS/Linux use `python3`, falling back to `python` if needed.
 - The script uses only the Python standard library. Do not install dependencies.
+- Page assets ship in the skill's `static/` directory (`index.html`, `styles.css`, `app.js`) and are read per request. Edit them and refresh the browser; no build step and no server restart.
 - It binds to `0.0.0.0` by default so other devices can connect.
 - `questions.md` is always writable from the browser. Add `--writable practice.md` (one or more plain filenames) when the learner also wants to answer `practice.md`, or any other file that contains `- [ ]` options or `___` blanks. Paths are rejected; write access is matched by filename in any subdirectory.
 - The startup banner prints an `Answers` line listing the writable filenames. Report it so the learner knows which files accept answers.
