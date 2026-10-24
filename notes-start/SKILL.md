@@ -16,6 +16,14 @@ This skill coordinates the full learning lifecycle for any technical topic. It o
 > **NEVER** write or create folders inside `~/.agents/`, `~/.gemini/`, or inside the skill's own installation directory.
 > **NO `notes.md` IN MODULES**: Modules contain strictly `overview.md`, `questions.md`, and sequenced lesson files (`01-*.md`). Learning preferences, curriculum settings, and dynamic learner struggle points are recorded exclusively in top-level `agent_notes.md`.
 
+> [!IMPORTANT]
+> **MANDATORY SKILL ROUTING: LESSON FILES COME ONLY FROM `notes-create-*`**:
+> Any lesson file about to be created or rewritten MUST be authored by invoking **`notes-create-coding-lessons`** (software/code topics) or **`notes-create-general-lessons`** (craft/non-code topics).
+> - **Never** write lesson prose inline from the orchestrator or a general-purpose agent.
+> - **Never** substitute the validator skills, `notes-ask`, or `notes-practice` for lesson creation.
+> - This routing applies to **every** case: full modules, single lessons, revisions, and supplementary lessons.
+> - If you are unsure which creator applies, determine the topic domain first, then route. Do not guess by writing the lesson yourself.
+
 ---
 
 ## Architecture & Sub-Skills Ecosystem
@@ -185,6 +193,7 @@ When initiating a module:
 > - **NO ORCHESTRATOR INLINE AUTHORING**: Never write or audit lesson files directly in the orchestrator.
 
 1. **Delegate Lesson Content Creation (Subagent 1 - Independent Creator)**:
+   - **Routing is mandatory**: lesson files are produced only through the `notes-create-*` skills below. Do not author lesson content inline, even for a single small lesson.
    - **For Software / Code Topics**: Invoke a subagent (`invoke_subagent`) using **`notes-create-coding-lessons`** (runnable code snippets, after-code translations, dev-to-dev stance).
    - **For Practical Craft / Non-Code Topics** (e.g. baking, concrete molding, perfumery, cooking, carpentry): Invoke a subagent (`invoke_subagent`) using **`notes-create-general-lessons`** (action protocols, sensory checks, broken-case recoveries, artisan-to-apprentice stance).
    - The subagent authors all sequenced lesson files inside the module directory, strictly enforcing the **concise 2–4 word filename slug limit** (`01-concise-slug.md` to `0n-concise-slug.md`). Overkill run-on filenames (5+ words) are strictly forbidden.
