@@ -82,6 +82,12 @@ or simply:
 Teach me [topic]
 ```
 
+For a quick, low-scaffolding session with no modules or course files:
+
+```text
+Teach me [topic] ad-hoc - no full course
+```
+
 ### Flow
 
 1. **Initial Grill**: The agent asks questions one at a time to establish your goals, target scope (deep dive vs. breadth), and preferred question delivery format (built-in question tool vs. token-saving `- [ ]` markdown checkboxes). It saves these settings to root `agent_notes.md` so any new agent can pick up your exact preferences without prior context.

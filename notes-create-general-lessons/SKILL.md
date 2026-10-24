@@ -150,5 +150,6 @@ Never jump straight into complex chemistry, exact industrial ratios, or niche to
 4. Ensure bidirectional navigation links are intact (`01 <-> 02 <-> 03...`) with top back-links and bottom forward-links using valid relative file paths.
 5. Ensure lesson files contain **pure lesson content** (all quizzes, doubts, and check-ins belong exclusively in `questions.md`).
 6. **Supplementary Single-Lesson Mode**: If instructed to add one supplementary lesson, read the module `overview.md` for the assigned number and links, then author **only** that file. Do not rewrite or regenerate existing lessons.
-7. Once written, invoke `notes-validate-general-lessons` for factual validation, then `notes-validate-house-rules` for editorial voice and structure validation before user study begins.
+7. **Standalone Ad-Hoc Mode**: If instructed to persist a single ad-hoc teaching file, author exactly one `notes/adhoc-<slug>.md` with no module overview and no navigation chain. Apply all voice and house rules, and skip the bidirectional links.
+8. Once written, invoke `notes-validate-general-lessons` for factual validation, then `notes-validate-house-rules` for editorial voice and structure validation before user study begins.
 

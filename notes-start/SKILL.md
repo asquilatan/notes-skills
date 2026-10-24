@@ -102,6 +102,10 @@ flowchart TD
 > 5. **New topic**: confirm whether to archive the existing course, keep it alongside a new course folder, or overwrite. Record the decision in `agent_notes.md` before generating anything.
 > Never let the conversation drift into an unrelated topic while the on-disk roadmap says otherwise.
 
+**First decision - Learning Format** (ask before the standard grill):
+- **Full Course**: structured diagnostics, modules, lessons, and milestone quizzes. Continue with the numbered grill below.
+- **Ad-Hoc Micro-Session**: teach one topic directly in chat with little or no file scaffolding. Ask only the minimal grill (topic/outcome, domain, depth, custom focus) and follow **Ad-Hoc Learning Mode** below instead of Steps 2-8.
+
 Do NOT generate course files until the user has been grilled. Ask **one question at a time** in the terminal, wait for the response, and then ask the next:
 
 1. **Topic & Specific Outcome**: "What exact topic do you want to learn, and what concrete project or outcome do you want to achieve with it?"
@@ -282,3 +286,27 @@ Once all modules in the course are completed:
 1. Target root `notes/questions.md`.
 2. Invoke `notes-conduct-quiz` to generate a comprehensive **Course Major Quiz (35–65 fresh questions)** scaled to course size (~35 for ~5 lesson courses, up to ~65 for 15+ lesson courses), strictly enforcing uniform 25% correct answer distribution across A, B, C, and D.
 3. Deliver questions via preferred mode in chunks, record detailed explanations in root `notes/questions.md`, and log final mastery reflections in root `notes/agent_notes.md`.
+
+---
+
+## Ad-Hoc Learning Mode (No Course Scaffolding)
+
+Use this mode when the learner wants to understand something now without a multi-module course. It deliberately avoids diagnostic phases, module directories, overview files, and re-quiz cycles.
+
+1. **Minimal Grill (One Question at a Time)**:
+   - Topic and the concrete question or outcome.
+   - Topic domain (software/code vs. practical craft) to pick the right teaching voice.
+   - Desired depth: quick intuition, working mechanics, or deep internals.
+   - Any specific focus or constraint.
+2. **Teach in Chat**:
+   - Explain in short, digestible segments using the appropriate voice (dev-to-dev or artisan-to-apprentice).
+   - Invoke `notes-ask` behavior for follow-up questions.
+   - Use `notes-practice` only if the learner explicitly wants drills.
+   - No diagnostic quiz, no module overview, no milestone checks unless asked.
+3. **Persistence (Default: None)**:
+   - By default, write **no files**. The session lives in chat.
+   - If the learner asks to keep the material, persist exactly **one** self-contained file at `notes/adhoc-<2-4-word-slug>.md`, authored through the matching `notes-create-*` skill in standalone mode.
+   - Do not create a module folder, `overview.md`, per-topic `questions.md`, or `agent_notes.md` for an ad-hoc session. If a check-in is requested, keep it in chat or inside that single file.
+4. **Escalation to a Full Course**:
+   - If the learner later wants structure, use the ad-hoc material as source material and begin the standard flow at Step 1 (or Step 2 when the goal is already clear).
+   - Never silently convert an ad-hoc session into a full course.
