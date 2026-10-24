@@ -39,8 +39,10 @@ Keep responses compact so the student can absorb the answer in 30 seconds and re
    - Bold hook stating what the thing is and why it exists.
 2. **Visual Flow (Mermaid - When Needed Only)**:
    - Include a diagram if the question involves request lifecycles, protocol handshakes, architectural boundaries, or state transitions.
-3. **Core Mechanics (3-4 numbered or bullet items)**:
-   - Break down the moving parts in sequence or list key components.
+3. **Core Mechanics (Flowing Prose)**:
+   - Explain the moving parts in 1-2 connected paragraphs. Progress through the sequence with natural transitions ("first", "once that completes", "from there") instead of a numbered list.
+   - **Never use numbered lists** (`1.`, `2.`, `3.`) in terminal responses or persisted Q&A entries. Ordered lists read like a tutorial and bloat the answer.
+   - Unordered bullets are allowed only for genuinely parallel, non-sequential items (e.g. three independent config flags), never to break up a mechanism into steps.
 4. **Direct Practical Impact (1 sentence)**:
    - Conclude with the real-world engineering consequence (e.g. memory savings, $O(1)$ efficiency, decoupled refactoring).
 
@@ -80,9 +82,7 @@ Whenever an inquiry involves a diagram, deep clarification, or code demonstratio
    [Diagram if applicable]
    ```
 
-   1. **[Component 1]**: [Explanation]
-   2. **[Component 2]**: [Explanation]
-   3. **[Component 3]**: [Explanation]
+   [Core mechanics explained in flowing prose. No numbered lists.]
 
    [Direct practical payoff sentence]
    ```
@@ -121,9 +121,7 @@ sequenceDiagram
     Server-->>Client: Close ACK & Terminate TCP
 ```
 
-1. **HTTP Handshake**: The client sends a normal HTTP request with `Upgrade: websocket` and `Connection: Upgrade`.
-2. **Protocol Switch (101)**: The server agrees via an HTTP `101 Switching Protocols` response, bypassing standard request-response cycles and keeping the raw TCP socket alive.
-3. **Evented Frame Loop**: Both sides exchange minimal binary-framed messages (2 to 10 bytes overhead per message). The server delegates the open socket to the OS event loop (`epoll`/`kqueue`), consuming virtually zero CPU while idle.
+The client starts by sending a normal HTTP request with `Upgrade: websocket` and `Connection: Upgrade`. The server agrees via an HTTP `101 Switching Protocols` response, which bypasses the standard request-response cycle and keeps the raw TCP socket alive. From there both sides exchange minimal binary-framed messages with only 2 to 10 bytes of overhead each, and the server hands the open socket to the OS event loop (`epoll`/`kqueue`) so an idle connection costs virtually no CPU.
 
 This eliminates HTTP header overhead on every message, giving you full-duplex communication over a single long-lived connection.
 ```
