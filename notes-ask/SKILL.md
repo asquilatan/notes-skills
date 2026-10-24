@@ -14,6 +14,9 @@ Use this skill whenever the user asks an ad-hoc question, requests clarification
 
 ## 1. Core Principles & Voice
 
+0. **Load Recorded Context First**:
+   - Before answering, read root `agent_notes.md` and the active module `overview.md` when they exist. Honor the learner's recorded preferences, current lesson, and known struggle points instead of assuming a blank slate.
+
 1. **Direct Answer in Sentence One, Emphasized as a Block**:
    - Always deliver the direct answer, purpose, or definition in the very first sentence. Never open with pleasantries, restatements, or conversational filler.
    - The **entire opening paragraph** (not just the first phrase) MUST be wrapped in bold emphasis (`**...**`), whether it is one sentence or two. This gives the student the answer at a glance before any mechanics.

@@ -20,6 +20,10 @@ Use this skill to conduct all learning assessments. All quizzes are written to t
 
 ## 1. The 5 Quiz Types & Sizing
 
+> [!IMPORTANT]
+> **READ `agent_notes.md` BEFORE ASKING ANY QUESTION**:
+> Before writing or delivering any diagnostic, check-in, drill, or re-quiz, read root `agent_notes.md` (if present) plus the relevant `overview.md`. Use the recorded question delivery mode, knowledge frontier, and struggle points. Never re-ask preferences or baseline information that is already on disk.
+
 Quizzes are delivered using the learner's preferred mode recorded in root `agent_notes.md` (**Built-in Question Tool** or **Markdown Checkbox Mode**).
 
 | Quiz Type | Location | Purpose & Trigger | Sizing & Strategy | Delivery Format |

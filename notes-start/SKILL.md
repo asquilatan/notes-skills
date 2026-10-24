@@ -68,6 +68,17 @@ flowchart TD
 
 ## Detailed Step-by-Step Instructions
 
+### Step 0: Context Recovery (Mandatory Before Any Questioning)
+
+> [!IMPORTANT]
+> **READ `agent_notes.md` BEFORE ASKING THE LEARNER ANYTHING**:
+> A fresh, context-less agent must reconstruct state from disk before opening its mouth. Never begin a grill, diagnostic, or check-in without doing this first.
+> 1. Locate the course root (usually `./notes/`). If `agent_notes.md` exists, read it fully.
+> 2. Read root `overview.md` and the active module's `overview.md`.
+> 3. Skim the tail of the active `questions.md` and `practice.md` for the most recent activity.
+> 4. Resume from the recorded preferences, frontier, and question delivery mode. **Do not re-ask settings that are already recorded.**
+> 5. If no workspace exists, state that plainly and proceed to the Step 1 grill to initialize one.
+
 ### Step 1: Mandatory Grill (One Question at a Time)
 Do NOT generate course files until the user has been grilled. Ask **one question at a time** in the terminal, wait for the response, and then ask the next:
 
