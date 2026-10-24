@@ -97,6 +97,7 @@ notes/
 - **Course Length Tier**: [Short (1–3 modules) / Average (4–8 modules) / Long (9+ modules)]
 - **Topic Domain**: [Software/Code vs. Practical Craft / Non-Code]
 - **Learning Style**: [Project-based vs. Concept-only vs. Mixed]
+- **Narrative Motif (Optional)**: [Single running example threaded across lessons, or "None (not applicable)"]
 - **Source Authority**: [Provided Syllabus/PPT vs. Generated from Scratch]
 - **Question Delivery Mode**: [Built-in Question Tool (`ask_question`) / Markdown Checkbox (`- [ ]` in `questions.md`)]
 - **User Pacing / Notes**: [Any additional nuances or preferences captured during grilling]
@@ -118,6 +119,12 @@ notes/
 # [Course Title]
 
 [A single concise paragraph summarizing what we will tackle across this course, why it matters, and the final capability you will possess.]
+
+## Narrative Motif (Optional)
+
+*Omit this section entirely when no motif was selected. Never invent one.*
+
+**Motif**: [The single running artifact or example, e.g. `position = initial + rate * 60` → tokens → AST → bytecode → execution]
 
 ## Dependency Graph
 
@@ -225,3 +232,22 @@ graph TD
      - `:::current` for the active module/lesson (Blue).
      - `:::pending` for upcoming modules/lessons (Grey).
    - Update the **Current Position** text explicitly so the harness and user always know where they are.
+
+---
+
+## 7. Optional Narrative Motif
+
+A motif is one running example followed through its entire lifecycle, so the learner watches a single artifact transform instead of memorizing disconnected definitions. The classic case is a compiler course where `position = initial + rate * 60` becomes lexemes, then tokens, then an AST, then bytecode, then output.
+
+1. **Use It Only When the Topic Has a Lifecycle**:
+   - Good fits: compilers, data pipelines, network request lifecycles, food from raw ingredient to plated dish, clay to fired ceramic.
+   - Bad fits: sprawling breadth surveys, unrelated tool catalogs, or any topic where the example would feel bolted on. When in doubt, skip it.
+2. **Select Once, Record Once**:
+   - Choose the motif during the grill (or immediately after diagnostics) and store it in root `agent_notes.md` under `Narrative Motif (Optional)`.
+   - Mirror it in a `## Narrative Motif (Optional)` section of the course `overview.md` only when one was selected.
+3. **Thread It Consistently**:
+   - Each lesson that touches the motif opens by naming its current state and closes by naming the transformation the next lesson will apply.
+   - Keep names, identifiers, quantities, and intermediate values identical across every lesson. Never silently swap in a new example.
+4. **Do Not Force It**:
+   - Lessons that do not involve the motif omit it entirely. Never shoehorn the motif into a tangent module just for continuity.
+   - If the user asks to remove the motif mid-course, delete it from `agent_notes.md`, `overview.md`, and stop referencing it in future lessons. Do not rewrite completed lessons unless asked.

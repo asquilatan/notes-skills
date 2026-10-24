@@ -100,7 +100,11 @@ Use this skill to generate the complete set of lesson files for non-coding modul
    - **Check-in**: `Touch the surface gently. It should feel...` / `Observe the liquid carefully: you should see tiny bubbles forming along the rim.`
 6. **No Sign-Off Snippets**:
    - Never end a lesson with a personal aside, anecdote, or "senior artisan" sign-off. Close with the forward transition paragraph only.
-7. **Mermaid Diagrams**:
+7. **Narrative Motif (Only When Recorded)**:
+   - If root `agent_notes.md` records a narrative motif, thread that same material or example through the lessons where it applies. Open relevant lessons by naming the motif's current state and close by naming its next transformation.
+   - Keep names, quantities, temperatures, and stage names identical across lessons.
+   - Do not invent a motif when none is recorded, and do not contradict details established in earlier lessons.
+8. **Mermaid Diagrams**:
    - Include a Mermaid diagram (`flowchart TD`, `flowchart LR`, or `sequenceDiagram`) whenever a process workflow, chemical/physical transformation, or timing sequence benefits from visual clarity.
    - Keep diagrams focused (5-10 nodes max).
    - Follow every diagram with a 1-2 sentence plain-English walkthrough.

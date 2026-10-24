@@ -114,7 +114,10 @@ Do NOT generate course files until the user has been grilled. Ask **one question
 5. **Learning Style**: Project-based (hands-on code or physical recipes/protocols) vs. Concept-only (theory, mental models) vs. Mixed.
 6. **Current Level**: Beginner / Intermediate / Advanced.
 7. **Output Workspace**: Confirm root directory in current workspace (default: `./notes/` or `./Learning/<topic>/`).
-8. **Question Delivery Mode**: "How would you like to take quizzes and check-ins?
+8. **Narrative Motif (Optional)**: "Optional: do you want one running example threaded through the course (for example, `position = initial + rate * 60` becoming tokens, then an AST, then bytecode)? If the topic does not naturally support a continuous example, we will skip it entirely."
+   - Only use a motif when the topic has a genuine lifecycle. Never force one onto a topic that does not call for it.
+   - Record the decision in root `agent_notes.md`.
+9. **Question Delivery Mode**: "How would you like to take quizzes and check-ins?
    - **(A) Built-in Question Tool (`ask_question`)**: The agent prompts questions directly using its native question tool (smooth, zero typing).
    - **(B) Markdown Checkboxes (`- [ ]` in `questions.md`)**: The agent writes questions directly to `questions.md` with `- [ ]` checkboxes; you mark `- [x]` in your editor and reply 'done'. (Saves tokens, keeps everything in markdown)."
 

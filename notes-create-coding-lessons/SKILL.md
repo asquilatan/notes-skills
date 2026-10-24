@@ -106,7 +106,11 @@ Use this skill to generate the complete set of lesson files for code-based and s
    - **Check-in**: `Run the following command in your terminal. You should see...`
 7. **No Sign-Off Snippets**:
    - Never end a lesson with a personal aside, anecdote, or "senior dev" sign-off. Close with the forward transition paragraph only.
-8. **Mermaid Diagrams**:
+8. **Narrative Motif (Only When Recorded)**:
+   - If root `agent_notes.md` records a narrative motif, thread that same example through the lessons where it applies. Open relevant lessons by naming the motif's current state and close by naming its next transformation.
+   - Keep identifiers, values, and stage names identical across lessons.
+   - Do not invent a motif when none is recorded, and do not contradict details established in earlier lessons.
+9. **Mermaid Diagrams**:
    - Include a Mermaid diagram (`flowchart TD` or `sequenceDiagram`) whenever an architectural flow, data lifecycle, or multi-step coordination is easier to grasp visually.
    - Keep diagrams focused (5-10 nodes max).
    - Follow every diagram with a 1-2 sentence plain-English walkthrough.
