@@ -322,9 +322,21 @@ HTML_PAGE = r"""<!doctype html>
   .markdown-body .mermaid {
     margin: 1.2em 0;
     overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
     text-align: center;
   }
-  .markdown-body .mermaid svg { max-width: 100%; height: auto; }
+  .markdown-body .mermaid svg {
+    display: block;
+    margin: 0 auto;
+    height: auto;
+  }
+  .mermaid-hint {
+    margin: -0.6em 0 1.2em;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+  }
   .markdown-body .katex {
     display: inline-block;
     max-width: 100%;
@@ -621,12 +633,29 @@ async function renderMermaid() {
     securityLevel: 'strict',
     theme: dark ? 'dark' : 'default',
     fontFamily: 'ui-sans-serif, -apple-system, "Segoe UI", sans-serif',
+    htmlLabels: false,
+    flowchart: { useMaxWidth: false },
+    sequence: { useMaxWidth: false },
   });
   try {
     await mermaid.run({ nodes, suppressErrors: true });
   } catch (error) {
     console.warn('Mermaid rendering failed:', error);
   }
+  updateDiagramHints();
+}
+
+function updateDiagramHints() {
+  content.querySelectorAll('.mermaid').forEach((diagram) => {
+    const next = diagram.nextElementSibling;
+    if (next && next.classList.contains('mermaid-hint')) next.remove();
+    if (diagram.scrollWidth > diagram.clientWidth + 2) {
+      const hint = document.createElement('div');
+      hint.className = 'mermaid-hint';
+      hint.textContent = 'Swipe to pan the diagram';
+      diagram.after(hint);
+    }
+  });
 }
 
 function renderMath() {
@@ -808,6 +837,12 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () 
     diagram.textContent = diagram.dataset.graph;
   });
   renderMermaid();
+});
+
+let resizeTimer = null;
+window.addEventListener('resize', () => {
+  window.clearTimeout(resizeTimer);
+  resizeTimer = window.setTimeout(updateDiagramHints, 150);
 });
 
 async function init() {
