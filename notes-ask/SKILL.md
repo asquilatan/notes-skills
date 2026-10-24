@@ -33,20 +33,22 @@ Use this skill whenever the user asks an ad-hoc question, requests clarification
 
 ---
 
-## 2. Response Length & Structure (Punchy ~3-4 Blocks)
+## 2. Response Length & Structure (Default: Tight, ~120 Words)
 
-Keep responses compact so the student can absorb the answer in 30 seconds and return to the lesson without cognitive overload:
+Default budget: **1-3 short paragraphs, roughly 120 words total**. Most answers should take under 30 seconds to read so the student can return to the lesson without cognitive overload.
+
+Expand only when the mechanism genuinely requires it (e.g. a multi-stage protocol with state transitions) or when the user explicitly asks for depth. Never pad a response to satisfy a template: omit any block that does not add information.
 
 1. **Opening Definition / Premise (1-2 sentences, Fully Bolded)**:
    - The whole opening paragraph states what the thing is and why it exists, wrapped in bold. No bold fragments mixed with plain text in this block.
-2. **Visual Flow (Mermaid - When Needed Only)**:
-   - Include a diagram if the question involves request lifecycles, protocol handshakes, architectural boundaries, or state transitions.
-3. **Core Mechanics (Flowing Prose)**:
-   - Explain the moving parts in 1-2 connected paragraphs. Progress through the sequence with natural transitions ("first", "once that completes", "from there") instead of a numbered list.
+2. **Visual Flow (Mermaid - Only When Essential)**:
+   - Add a diagram only when the question involves request lifecycles, protocol handshakes, architectural boundaries, or state transitions that prose alone would make harder to grasp.
+3. **Core Mechanics (Flowing Prose, 1-2 Paragraphs Max)**:
+   - Explain the moving parts in connected prose. Progress through the sequence with natural transitions ("first", "once that completes", "from there") instead of a numbered list.
    - **Never use numbered lists** (`1.`, `2.`, `3.`) in terminal responses or persisted Q&A entries. Ordered lists read like a tutorial and bloat the answer.
    - Unordered bullets are allowed only for genuinely parallel, non-sequential items (e.g. three independent config flags), never to break up a mechanism into steps.
-4. **Direct Practical Impact (1 sentence)**:
-   - Conclude with the real-world engineering consequence (e.g. memory savings, $O(1)$ efficiency, decoupled refactoring).
+4. **Practical Impact (1 Sentence, Optional)**:
+   - Close with the real-world engineering consequence only when it is not already obvious (e.g. memory savings, $O(1)$ efficiency, decoupled refactoring).
 
 ---
 
