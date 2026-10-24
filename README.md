@@ -34,6 +34,7 @@ graph TD
 
 - **[`notes-start`](./notes-start/)**: This skill orchestrates the learning flow, runs the initial grill (capturing topic, scope, and quiz delivery preferences), initializes `agent_notes.md` for context-less agent handoffs, and coordinates all sub-skills.
 - **[`notes-continue`](./notes-continue/)**: This skill rehydrates a new or context-less agent from on-disk course state, summarizes the current position and open struggles, and asks one confirmation before resuming.
+- **[`notes-view`](./notes-view/)**: This skill serves a read-only, phone-friendly Markdown viewer for the notes over the local network, with Mermaid and LaTeX rendering, system dark/light mode, and a right-side navigation drawer.
 - **[`notes-create-outline`](./notes-create-outline/)**: This skill generates root `agent_notes.md` (settings, preferences, struggle tracker) and true DAG `overview.md` roadmaps. Modules contain `overview.md` and `questions.md` (no module `notes.md`).
 - **[`notes-conduct-quiz`](./notes-conduct-quiz/)**: This skill conducts diagnostics, check-in quizzes, and reviews via the built-in question tool (`ask_question`) or token-saving Markdown checkboxes (`- [ ]`), logging struggle points to `agent_notes.md`.
 - **[`notes-ask`](./notes-ask/)**: This skill answers mid-lesson questions, generates Mermaid diagrams, logs Q&As to `questions.md`, and notes learner friction in `agent_notes.md`.
@@ -97,6 +98,14 @@ To resume an existing course in a fresh session or with a different agent:
 ```text
 /notes-continue
 ```
+
+To read your notes on a phone or another device on the same network:
+
+```bash
+python notes-view/scripts/viewer.py --directory ./notes
+```
+
+Open the printed **Network** URL on the other device (default port `8080`).
 
 ### Flow
 

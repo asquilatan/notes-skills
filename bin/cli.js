@@ -26,6 +26,7 @@ const c = {
 const SKILL_DESCRIPTIONS = {
   'notes-start': 'Coordinates the learning flow and diagnostic questions',
   'notes-continue': 'Rehydrates a new agent from on-disk course state and resumes',
+  'notes-view': 'Serves the notes as a phone-friendly LAN Markdown viewer with Mermaid and LaTeX',
   'notes-create-outline': 'Generates course outlines and Mermaid dependency graphs',
   'notes-conduct-quiz': 'Runs diagnostics, check-in quizzes, and review questions',
   'notes-ask': 'Answers mid-lesson questions and logs them to questions.md',
